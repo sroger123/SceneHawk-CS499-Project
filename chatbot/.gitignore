@@ -1,0 +1,4 @@
+
+# Large external datasets (do not redistribute)
+data/external/
+data/reviews.jsonl
