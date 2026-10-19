@@ -197,20 +197,26 @@ npm run dev        # http://localhost:3000
 
 The website runs without any API keys.
 
-### Chat service (needed for the `/chat` page)
+### Data pipeline
 
-Requires Python 3.10+. Run it in a second terminal:
+Requires Python 3.10+. These scripts build the review corpus; they are run
+once, not served:
 
 ```bash
 cd chatbot
 pip install -r requirements.txt
-cp .env.example .env               # then add EMBED_API_KEY and REQUESTY_API_KEY
-python src/load_chroma.py          # build the search index once
-python -m uvicorn server:app --app-dir src --port 8000
+cp .env.example .env               # then add TMDB_API_KEY
+python scripts/01_count_reviews.py   # reviews per film, from the aclImdb index
+python scripts/02_build_starter.py   # look up each film on TMDB by IMDb ID
+python scripts/03_extract_reviews.py # clean the review text
 ```
 
-`EMBED_API_KEY` turns the user's request into a search. `REQUESTY_API_KEY`
-writes the recommendation. Never commit `.env` files.
+`TMDB_API_KEY` is the only key needed. Never commit `.env` files.
+See [chatbot/scripts/README.md](chatbot/scripts/README.md) for what each
+script reads and writes.
+
+The `/chat` page has no backend right now — the old Chroma retrieval service
+was removed. The feelings model replaces it.
 
 ### Deployment
 

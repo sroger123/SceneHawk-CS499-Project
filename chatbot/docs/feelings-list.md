@@ -1,6 +1,12 @@
-# SceneHawk — Feelings List (DRAFT for Week 1)
+# SceneHawk — Feelings List
 
-**Status:** draft — team must review, test on 15 shared reviews, then FREEZE.
+**Status: FROZEN.** Agreed by the team on 18 October 2026. All 28 feelings kept as
+drafted; nothing cut, merged or renamed.
+
+This list is the source of truth. Three other places must match it exactly:
+the `feelings` table in `chatbot/db/schema.sql`, the label list in the training
+notebook, and the feeling columns in the labelling sheet. Changing it means
+changing all four.
 
 ## The labeling rule
 Label **what the viewer felt while watching** — *not* whether they liked the film.
@@ -69,15 +75,21 @@ A review can carry **several** feelings at once (multi-label), or none.
 
 ---
 
-## Borderline — discuss and decide on Thursday
-- **bored** — a real felt state, but it slides into "I disliked it." Include only if the guide can keep it experiential.
-- **confused** — same risk: an intended effect, or a complaint about bad writing? Decide which.
-- **moved** vs **sad** — check they are distinguishable on real reviews, or merge.
-- **uplifted** vs **joyful** — may be too close; consider merging.
-- **tender** vs **heartwarming** — may be too close; consider merging.
+## Borderline cases — decided
 
-## Thursday test (how to freeze this)
-1. Pick **15 reviews** everyone reads.
-2. Each person labels all 15 independently using this list.
-3. Compare. Any feeling that people apply inconsistently gets **redefined, merged, or cut**.
-4. Target **20-30** final feelings. Freeze and write the labeling guide around them (Week 2).
+These five were flagged as likely to cause disagreement. The team reviewed them and
+kept the list unchanged. Recorded here so the reasoning is not lost:
+
+- **bored** — not included. It describes a verdict on the film more than a felt
+  experience, and the labelling rule excludes verdicts.
+- **confused** — kept. Treated as an intended effect ("I never knew what was real"),
+  not as a complaint about bad writing.
+- **moved** vs **sad** — kept separate. *sad* is sorrow; *moved* is being touched,
+  which can be positive.
+- **uplifted** vs **joyful** — kept separate. *joyful* is happiness during;
+  *uplifted* is how you are left afterwards.
+- **tender** vs **heartwarming** — kept separate. *tender* describes how the film
+  treats its subject; *heartwarming* describes the effect on the viewer.
+
+If labelling in Week 3 shows any of these being applied inconsistently in practice,
+revisit them then — and update all four places listed at the top.

@@ -49,9 +49,12 @@ extra or missing fields will not crash it - they just render blank.
 - The proxy aborts at 55s and Vercel caps the function at 60s, so keep responses
   under ~50s.
 
-## Also to update when the backend is rebuilt
+## Also to create when the backend is rebuilt
 
-- `chatbot/Dockerfile` - copies `src/`
-- `chatbot/start.sh` - runs `uvicorn server:app --app-dir src`, and builds a Chroma
-  index that no longer exists
-- `render.yaml` - deploys the above
+The old Chroma service and its deploy scaffolding (`Dockerfile`, `start.sh`,
+`render.yaml`) were removed, so the new service starts from nothing. It will
+need:
+
+- a container or start command for whatever serves the feeling profiles
+- a deploy config for the host, and `CHATBOT_URL` set on the Vercel side
+- Step 1 restored in `DEPLOY.md`
