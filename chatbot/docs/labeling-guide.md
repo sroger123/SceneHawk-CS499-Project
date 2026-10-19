@@ -52,7 +52,7 @@ A forced label is worse than an empty row, because the model learns the wrong th
 | Reflection | thoughtful, nostalgic, inspired, confused |
 | Discomfort and anger | uncomfortable, angry, disgusted, drained |
 
-Full definitions and examples: `docs/feelings-list-draft.md`.
+Full definitions and examples: `feelings-list.md`.
 
 ## Worked examples
 
