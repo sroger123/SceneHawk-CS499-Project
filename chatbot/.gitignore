@@ -1,4 +1,11 @@
-
 # Large external datasets (do not redistribute)
 data/external/
 data/reviews.jsonl
+
+# Labelling batches: these embed aclImdb review text, so they are not ours to
+# redistribute. Regenerate them with scripts/05_sample_for_labeling.py - the
+# seed is fixed, so everyone gets the same sample. The labels themselves go
+# into Supabase, not git.
+data/labeling/batch_*.csv
+data/labeling/*.docx
+!data/labeling/manifest.json

@@ -2,3 +2,4 @@
 # The feelings model trains in Colab, which installs its own deps in-notebook.
 requests==2.34.2
 python-dotenv==1.0.1
+psycopg2-binary==2.9.10
