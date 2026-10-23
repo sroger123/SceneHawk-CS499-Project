@@ -1,6 +1,8 @@
 # SceneHawk — Review Labeling Guide
 
-**Status:** draft for Week 2. Update the feelings list below once the team freezes it.
+**Status:** in use for Week 3 labelling. The feelings list it refers to was frozen on 18 October 2026 — all 28 feelings, nothing cut or merged.
+
+Revise this guide after the agreement check on the 25 shared reviews. Where two labellers disagree, the fault is in a definition here, not in the labeller.
 
 ## What you are doing
 You read a film review and mark **which feelings the film gave the viewer while they
@@ -91,7 +93,7 @@ admiration of technique? The team must decide and apply it consistently.
   treated" = `angry`. "This movie made me angry it was so bad" = quality judgment, no label.
 - **Scared vs. tense vs. dread.** `scared` = sudden fright. `tense` = sustained edge.
   `dread` = slow certainty something bad is coming.
-- **Confused.** Intended effect, or bad writing? Pick one reading and stick to it.
+- **Confused.** Decided: treat it as an *intended effect* ("I never knew what was real"), not as a complaint about bad writing. "The plot made no sense" gets no label.
 - **Sarcasm.** "I cried laughing" is `amused`, not `sad`.
 - **Second-hand reports.** "My wife cried" still counts — it is evidence about the film.
 
