@@ -29,6 +29,39 @@ python scripts/03_extract_reviews.py   # clean review text          -> reviews.j
 python scripts/04_load_supabase.py     # load it all into Supabase
 ```
 
+## Week 3 - labelling and the splits
+
+```bash
+python scripts/05_sample_for_labeling.py   # pick reviews to hand-label
+# ... hand labelling, then LLM labelling in notebooks/scenehawk_llm_labeling.ipynb
+python scripts/06_expand_films.py          # add the films the splits need
+python scripts/04_load_supabase.py         # reload the grown corpus
+python scripts/07_load_labels.py           # labels -> review_labels, stamp label_split
+python scripts/08_export_labels.py         # text-free copies for git
+```
+
+Step 6 exists because the learning/checking/exam splits were sampled from the
+whole aclImdb corpus, not the 1,259-film starter set, so most of the films they
+reference have no row yet and the labels would fail on the foreign keys. It
+deliberately ignores the 20-review threshold: that threshold protects film
+profiles, not training, because the model reads one review at a time and never
+sees how many reviews a film has. Apply it in Week 5 instead, on
+`films.review_count`.
+
+Step 7 turns the wide CSVs (28 columns of 0/1) into the long shape
+`review_labels` wants (one row per feeling present). A 0 writes nothing -
+absence is the row not existing. It maps:
+
+| file | `label_split` | `source` | `labeler` |
+|---|---|---|---|
+| `learning.csv` | `train` | `llm` | `deepseek` |
+| `checking.csv` | `val` | `llm` | `deepseek` |
+| `exam.csv` | `answer_key` | `human` | `team` |
+
+Step 8 writes `data/labels/*_labels.csv` - the same labels with the review text
+dropped, 4.9 MB down to 313 KB. The full split files are gitignored because
+they embed aclImdb text; these are what the repo keeps.
+
 Step 2 makes one TMDB call per film (~1,400 calls, a few minutes).
 
 Step 4 loads in foreign-key order - feelings, then films, then reviews - because
