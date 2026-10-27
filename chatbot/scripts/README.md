@@ -115,6 +115,53 @@ answer key.
 
 Always name the metric as "macro-F1 over the reportable tier", never bare "macro-F1".
 
+## Week 4 - training data, baseline, scoring
+
+    python scripts/09_build_training_data.py   # text + 28-wide label vector
+    python scripts/10_baseline.py              # tf-idf + logistic regression
+
+Label order comes from `docs/feelings-list.md`, the same parser step 7 uses, so
+column 7 means the same feeling in training, in scoring and in the database.
+Blank rows are kept: 61% of training rows have no feeling, and those are the
+negative examples a sigmoid head needs in order to learn to say no.
+
+`data/training/` is gitignored (full review text, same reason as
+`reviews.jsonl`). `eval/preds/` is too, being regenerable in seconds.
+
+### Scoring
+
+    python eval/score.py eval/preds/baseline_val.jsonl --tune         --out eval/thresholds_baseline.json
+    python eval/score.py eval/preds/baseline_answer_key.jsonl         --thresholds eval/thresholds_baseline.json
+
+Tune on `val`, freeze, then score the answer key once. `score.py` refuses
+`--tune --split answer_key`.
+
+Thresholds are necessary - at these base rates a flat 0.5 predicts almost
+nothing - and that makes them a knob that must be fitted off the test set.
+Two failure modes bit us, in opposite directions:
+
+- **Per-feeling tuning on every feeling.** With 6 val positives, maximising F1
+  drives the threshold to the floor, because recall 1.0 at precision 0.02 beats
+  any honest cut. `uncomfortable` fired on 197 of 206 reviews. Reported 0.196.
+- **A global threshold pooled over all feelings.** `amused` holds 84 of 287 val
+  positives and dominates the pool, so the threshold becomes amused's optimum
+  and rare feelings never fire at all. Reported 0.125.
+
+So: a feeling earns its own threshold with >= 10 val positives (9 qualify); the
+rest share a global threshold fitted only on the low-support feelings that use
+it. Baseline macro-F1 **0.157** over the 18 reportable feelings.
+
+### The number to beat
+
+| | macro-F1 (18 reportable) |
+| --- | --- |
+| predict nothing | 0.000 |
+| tf-idf + logistic regression | **0.157** |
+
+The baseline gets real traction on 7 feelings and scores 0 on 11. Bag-of-words
+was what Maas et al. used on this dataset, so this is a fair comparison point,
+not a strawman - if the fine-tuned model does not beat it, that is a finding.
+
 ## Citation
 
 Maas, A. L., Daly, R. E., Pham, P. T., Huang, D., Ng, A. Y., & Potts, C. (2011).

@@ -17,3 +17,11 @@ data/learning.csv
 data/checking.csv
 data/exam.csv
 data/exam.BEFORE_FIX.csv
+
+# Training data carries the full review text (same reason as reviews.jsonl).
+# Regenerate with scripts/09_build_training_data.py.
+data/training/
+
+# Model predictions, regenerable in seconds from scripts/10_baseline.py.
+# The tuned thresholds ARE committed - they must be frozen before scoring.
+eval/preds/
