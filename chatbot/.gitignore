@@ -9,3 +9,11 @@ data/reviews.jsonl
 data/labeling/batch_*.csv
 data/labeling/*.docx
 !data/labeling/manifest.json
+
+# The split files carry the full aclImdb review text (~5 MB), which is not ours
+# to redistribute. The labels themselves are, so scripts/08_export_labels.py
+# writes text-free copies to data/labels/ and those are committed instead.
+data/learning.csv
+data/checking.csv
+data/exam.csv
+data/exam.BEFORE_FIX.csv
