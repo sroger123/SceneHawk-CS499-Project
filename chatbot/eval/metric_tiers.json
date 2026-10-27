@@ -1,0 +1,207 @@
+{
+  "generated_from": "data/labels/*_labels.csv",
+  "thresholds": {
+    "min_answer_key": 3,
+    "min_train": 20,
+    "wide_ci": 8
+  },
+  "headline_metric": "macro-F1 over the 'reportable' tier",
+  "tiers": {
+    "reportable": [
+      "amused",
+      "moved",
+      "thoughtful",
+      "nostalgic",
+      "tense",
+      "angry",
+      "sad",
+      "thrilled",
+      "unsettled",
+      "curious",
+      "disturbed",
+      "disgusted",
+      "joyful",
+      "heartwarming",
+      "inspired",
+      "uncomfortable",
+      "awed",
+      "confused"
+    ],
+    "trainable_only": [
+      "scared",
+      "bittersweet",
+      "uplifted",
+      "dread",
+      "drained"
+    ],
+    "unmeasurable": [
+      "hopeful",
+      "tender",
+      "cozy",
+      "grief-stricken"
+    ],
+    "cannot_learn": [
+      "lonely"
+    ]
+  },
+  "wide_confidence": [
+    "moved",
+    "nostalgic",
+    "tense",
+    "angry",
+    "sad",
+    "thrilled",
+    "unsettled",
+    "curious",
+    "disturbed",
+    "disgusted",
+    "joyful",
+    "heartwarming",
+    "inspired",
+    "uncomfortable",
+    "awed",
+    "confused"
+  ],
+  "counts": {
+    "amused": {
+      "train": 507,
+      "val": 84,
+      "answer": 37
+    },
+    "moved": {
+      "train": 137,
+      "val": 32,
+      "answer": 8
+    },
+    "thoughtful": {
+      "train": 87,
+      "val": 21,
+      "answer": 13
+    },
+    "nostalgic": {
+      "train": 83,
+      "val": 13,
+      "answer": 6
+    },
+    "tense": {
+      "train": 74,
+      "val": 20,
+      "answer": 8
+    },
+    "angry": {
+      "train": 67,
+      "val": 6,
+      "answer": 5
+    },
+    "sad": {
+      "train": 65,
+      "val": 13,
+      "answer": 7
+    },
+    "thrilled": {
+      "train": 64,
+      "val": 15,
+      "answer": 6
+    },
+    "unsettled": {
+      "train": 53,
+      "val": 12,
+      "answer": 3
+    },
+    "curious": {
+      "train": 49,
+      "val": 8,
+      "answer": 3
+    },
+    "scared": {
+      "train": 48,
+      "val": 10,
+      "answer": 2
+    },
+    "disturbed": {
+      "train": 38,
+      "val": 5,
+      "answer": 4
+    },
+    "disgusted": {
+      "train": 36,
+      "val": 2,
+      "answer": 7
+    },
+    "joyful": {
+      "train": 31,
+      "val": 6,
+      "answer": 6
+    },
+    "heartwarming": {
+      "train": 26,
+      "val": 9,
+      "answer": 7
+    },
+    "inspired": {
+      "train": 25,
+      "val": 7,
+      "answer": 5
+    },
+    "uncomfortable": {
+      "train": 18,
+      "val": 1,
+      "answer": 4
+    },
+    "awed": {
+      "train": 17,
+      "val": 9,
+      "answer": 4
+    },
+    "bittersweet": {
+      "train": 14,
+      "val": 5,
+      "answer": 1
+    },
+    "uplifted": {
+      "train": 13,
+      "val": 4,
+      "answer": 2
+    },
+    "hopeful": {
+      "train": 8,
+      "val": 3,
+      "answer": 0
+    },
+    "confused": {
+      "train": 6,
+      "val": 1,
+      "answer": 3
+    },
+    "dread": {
+      "train": 6,
+      "val": 0,
+      "answer": 1
+    },
+    "tender": {
+      "train": 6,
+      "val": 1,
+      "answer": 0
+    },
+    "drained": {
+      "train": 4,
+      "val": 0,
+      "answer": 1
+    },
+    "cozy": {
+      "train": 4,
+      "val": 0,
+      "answer": 0
+    },
+    "grief-stricken": {
+      "train": 1,
+      "val": 0,
+      "answer": 0
+    },
+    "lonely": {
+      "train": 0,
+      "val": 0,
+      "answer": 0
+    }
+  }
+}

@@ -96,6 +96,25 @@ Roughly half the corpus is the `unsup` split, which contains reviews of **any** 
 including neutral. The `pos`/`neg` splits only hold strongly positive (>=7) or strongly
 negative (<=4) reviews. **Sample from `unsup`** for a balanced spread of feelings.
 
+## Which feelings the result can report on
+
+`eval/metric_tiers.py` splits the 28 feelings by what the data supports, reading the
+committed label files (no database needed). Re-run it after any labelling round.
+
+| tier | meaning |
+| --- | --- |
+| `reportable` | >=3 answer-key examples. The headline macro-F1 covers these only. |
+| `trainable_only` | 1-2 answer-key examples. Train on them, do not report an F1. |
+| `unmeasurable` | no answer-key examples, so recall is 0/0 and F1 is undefined. |
+| `cannot_learn` | no training examples either. |
+
+Train on all 28 regardless: the heads are independent sigmoids, so an unused one costs
+nothing, and removing a feeling from the label space is hard to undo later. The limit is
+answer-key size, not labelling quality - `scared` has 48 training examples and 2 in the
+answer key.
+
+Always name the metric as "macro-F1 over the reportable tier", never bare "macro-F1".
+
 ## Citation
 
 Maas, A. L., Daly, R. E., Pham, P. T., Huang, D., Ng, A. Y., & Potts, C. (2011).
