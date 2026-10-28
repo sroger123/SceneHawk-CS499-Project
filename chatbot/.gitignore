@@ -16,7 +16,6 @@ data/labeling/*.docx
 data/learning.csv
 data/checking.csv
 data/exam.csv
-data/exam.BEFORE_FIX.csv
 
 # The training JSONL carries the full review text (same reason as
 # reviews.jsonl). Regenerate with scripts/09_build_training_data.py.
