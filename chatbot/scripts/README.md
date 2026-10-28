@@ -151,6 +151,38 @@ So: a feeling earns its own threshold with >= 10 val positives (9 qualify); the
 rest share a global threshold fitted only on the low-support feelings that use
 it. Baseline macro-F1 **0.157** over the 18 reportable feelings.
 
+### Reproducible without the dataset
+
+The whole eval path runs on a fresh clone with no aclImdb text present, which
+is the point: a headline number nobody else can recompute is not a result.
+
+Committed, text-free:
+
+| file | what it is |
+| --- | --- |
+| `data/labels/*_labels.csv` | the labels, ids and 28 columns, no review text |
+| `data/labels/corpus_ids.txt` | the 3,303 labelled reviews that have text |
+| `data/training/meta.json` | the canonical feeling order, and train positives |
+| `eval/metric_tiers.json` | which feelings may be reported on |
+| `eval/thresholds_baseline.json` | the frozen cut points |
+
+Gitignored (carries review text): `data/{learning,checking,exam}.csv`,
+`data/reviews.jsonl`, `data/training/*.jsonl`, `data/labeling/batch_*.csv`.
+
+`corpus_ids.txt` exists because of a bug worth not repeating. 471 labelled
+reviews are non-film titles with no text (see step 6), so counts have to be
+filtered to the usable 3,303. That filter originally ran against
+`reviews.jsonl` - gitignored - and was written `if known and ...`, so on a
+clean clone it got an empty set and quietly filtered nothing. `amused` counted
+579 instead of 507. Tier membership survived by luck. Review ids are not
+review text, so the usable set is committed and the filter now works
+everywhere; `metric_tiers.py` exits rather than run unfiltered.
+
+Verify after any change to the label files:
+
+    python eval/metric_tiers.py        # should leave metric_tiers.json unchanged
+    git diff --quiet eval/metric_tiers.json && echo reproduces
+
 ### The number to beat
 
 | | macro-F1 (18 reportable) |
