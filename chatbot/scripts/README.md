@@ -115,6 +115,85 @@ answer key.
 
 Always name the metric as "macro-F1 over the reportable tier", never bare "macro-F1".
 
+## Week 4 - training data, baseline, scoring
+
+    python scripts/09_build_training_data.py   # text + 28-wide label vector
+    python scripts/10_baseline.py              # tf-idf + logistic regression
+
+Label order comes from `docs/feelings-list.md`, the same parser step 7 uses, so
+column 7 means the same feeling in training, in scoring and in the database.
+Blank rows are kept: 61% of training rows have no feeling, and those are the
+negative examples a sigmoid head needs in order to learn to say no.
+
+`data/training/` is gitignored (full review text, same reason as
+`reviews.jsonl`). `eval/preds/` is too, being regenerable in seconds.
+
+### Scoring
+
+    python eval/score.py eval/preds/baseline_val.jsonl --tune         --out eval/thresholds_baseline.json
+    python eval/score.py eval/preds/baseline_answer_key.jsonl         --thresholds eval/thresholds_baseline.json
+
+Tune on `val`, freeze, then score the answer key once. `score.py` refuses
+`--tune --split answer_key`.
+
+Thresholds are necessary - at these base rates a flat 0.5 predicts almost
+nothing - and that makes them a knob that must be fitted off the test set.
+Two failure modes bit us, in opposite directions:
+
+- **Per-feeling tuning on every feeling.** With 6 val positives, maximising F1
+  drives the threshold to the floor, because recall 1.0 at precision 0.02 beats
+  any honest cut. `uncomfortable` fired on 197 of 206 reviews. Reported 0.196.
+- **A global threshold pooled over all feelings.** `amused` holds 84 of 287 val
+  positives and dominates the pool, so the threshold becomes amused's optimum
+  and rare feelings never fire at all. Reported 0.125.
+
+So: a feeling earns its own threshold with >= 10 val positives (9 qualify); the
+rest share a global threshold fitted only on the low-support feelings that use
+it. Baseline macro-F1 **0.157** over the 18 reportable feelings.
+
+### Reproducible without the dataset
+
+The whole eval path runs on a fresh clone with no aclImdb text present, which
+is the point: a headline number nobody else can recompute is not a result.
+
+Committed, text-free:
+
+| file | what it is |
+| --- | --- |
+| `data/labels/*_labels.csv` | the labels, ids and 28 columns, no review text |
+| `data/labels/corpus_ids.txt` | the 3,303 labelled reviews that have text |
+| `data/training/meta.json` | the canonical feeling order, and train positives |
+| `eval/metric_tiers.json` | which feelings may be reported on |
+| `eval/thresholds_baseline.json` | the frozen cut points |
+
+Gitignored (carries review text): `data/{learning,checking,exam}.csv`,
+`data/reviews.jsonl`, `data/training/*.jsonl`, `data/labeling/batch_*.csv`.
+
+`corpus_ids.txt` exists because of a bug worth not repeating. 471 labelled
+reviews are non-film titles with no text (see step 6), so counts have to be
+filtered to the usable 3,303. That filter originally ran against
+`reviews.jsonl` - gitignored - and was written `if known and ...`, so on a
+clean clone it got an empty set and quietly filtered nothing. `amused` counted
+579 instead of 507. Tier membership survived by luck. Review ids are not
+review text, so the usable set is committed and the filter now works
+everywhere; `metric_tiers.py` exits rather than run unfiltered.
+
+Verify after any change to the label files:
+
+    python eval/metric_tiers.py        # should leave metric_tiers.json unchanged
+    git diff --quiet eval/metric_tiers.json && echo reproduces
+
+### The number to beat
+
+| | macro-F1 (18 reportable) |
+| --- | --- |
+| predict nothing | 0.000 |
+| tf-idf + logistic regression | **0.157** |
+
+The baseline gets real traction on 7 feelings and scores 0 on 11. Bag-of-words
+was what Maas et al. used on this dataset, so this is a fair comparison point,
+not a strawman - if the fine-tuned model does not beat it, that is a finding.
+
 ## Citation
 
 Maas, A. L., Daly, R. E., Pham, P. T., Huang, D., Ng, A. Y., & Potts, C. (2011).

@@ -16,4 +16,18 @@ data/labeling/*.docx
 data/learning.csv
 data/checking.csv
 data/exam.csv
-data/exam.BEFORE_FIX.csv
+
+# The training JSONL carries the full review text (same reason as
+# reviews.jsonl). Regenerate with scripts/09_build_training_data.py.
+# meta.json is the exception and IS committed: it holds the 28-feeling order
+# that training, scoring and the database all have to agree on, plus the
+# per-feeling positive counts the trainer weights its loss with. No review
+# text, 1.6 KB, and eval/score.py cannot run without it - ignoring it left
+# the scorer broken on a fresh clone. The dir/* form matters here, because
+# git will not look inside an excluded directory to find a negation.
+data/training/*
+!data/training/meta.json
+
+# Model predictions, regenerable in seconds from scripts/10_baseline.py.
+# The tuned thresholds ARE committed - they must be frozen before scoring.
+eval/preds/

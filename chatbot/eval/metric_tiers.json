@@ -1,5 +1,5 @@
 {
-  "generated_from": "data/labels/*_labels.csv",
+  "generated_from": "data/labels/*_labels.csv, filtered by data/labels/corpus_ids.txt",
   "thresholds": {
     "min_answer_key": 3,
     "min_train": 20,

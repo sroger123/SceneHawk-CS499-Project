@@ -3,3 +3,8 @@
 requests==2.34.2
 python-dotenv==1.0.1
 psycopg2-binary==2.9.10
+
+# The bag-of-words baseline (scripts/10_baseline.py). The fine-tuned model
+# still trains in Colab - torch is not a dependency of this repo.
+numpy==2.4.6
+scikit-learn==1.9.1
