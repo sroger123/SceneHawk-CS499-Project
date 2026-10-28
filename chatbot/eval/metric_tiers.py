@@ -32,6 +32,7 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parent.parent          # chatbot/
 LABELS = ROOT / "data" / "labels"
 REVIEWS = ROOT / "data" / "reviews.jsonl"
+CORPUS_IDS = LABELS / "corpus_ids.txt"
 OUT = Path(__file__).resolve().parent / "metric_tiers.json"
 
 # file         the split it is
@@ -56,12 +57,31 @@ def classify(train, answer):
     return "reportable"
 
 
+def corpus_ids():
+    """The labelled reviews that have review text, so the counts below mean
+    what can actually be trained on and scored.
+
+    corpus_ids.txt is committed and is the preferred source. reviews.jsonl is
+    the fallback for anyone who has the dataset locally. If neither is
+    present this exits, because the earlier version quietly skipped the filter
+    and counted all 3,774 label rows instead of 3,303 - `amused` came out at
+    579 rather than 507 on a fresh clone, with nothing to flag it. A wrong
+    number that looks right is worse than a stopped script.
+    """
+    if CORPUS_IDS.exists():
+        return {line.strip() for line in
+                open(CORPUS_IDS, encoding="utf-8") if line.strip()}
+    if REVIEWS.exists():
+        return {json.loads(line)["review_id"]
+                for line in open(REVIEWS, encoding="utf-8")}
+    sys.exit(f"Need {CORPUS_IDS.name} or reviews.jsonl to tell which labelled "
+             f"reviews have text.\nRun scripts/08_export_labels.py (with the "
+             f"corpus present) to regenerate {CORPUS_IDS.name}.")
+
+
 def count():
     """feeling -> {train, val, answer}, over reviews the corpus really has."""
-    known = set()
-    if REVIEWS.exists():
-        for line in open(REVIEWS, encoding="utf-8"):
-            known.add(json.loads(line)["review_id"])
+    known = corpus_ids()
 
     counts, feelings, dropped = {}, None, 0
     for name, split in SPLITS:
@@ -78,7 +98,9 @@ def count():
         for r in rows:
             # A review with no text in the corpus can never be scored, so its
             # labels must not inflate the counts the tiers are drawn from.
-            if known and r["id"] not in known:
+            # No `known and ...` guard here: an empty set used to turn this
+            # filter into a no-op instead of an error.
+            if r["id"] not in known:
                 dropped += 1
                 continue
             for f in cols:
@@ -121,7 +143,8 @@ def main():
               f"(non-film titles TMDB had no match for).")
 
     OUT.write_text(json.dumps({
-        "generated_from": "data/labels/*_labels.csv",
+        "generated_from": "data/labels/*_labels.csv, "
+                          "filtered by data/labels/corpus_ids.txt",
         "thresholds": {"min_answer_key": MIN_ANSWER_KEY,
                        "min_train": MIN_TRAIN, "wide_ci": WIDE_CI},
         "headline_metric": "macro-F1 over the 'reportable' tier",

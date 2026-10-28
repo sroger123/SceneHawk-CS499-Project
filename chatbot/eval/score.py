@@ -21,6 +21,7 @@ Run:  python eval/score.py preds_val.jsonl --tune --out eval/thresholds.json
 Import:  from score import prf, macro_f1, tune_thresholds
 """
 import argparse
+import csv
 import json
 import sys
 from pathlib import Path
@@ -28,6 +29,13 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parent.parent          # chatbot/
 HERE = Path(__file__).resolve().parent
 TRAIN_DIR = ROOT / "data" / "training"
+LABELS = ROOT / "data" / "labels"
+
+# Truth is read from data/labels/, not data/training/. Both hold the same
+# labels, but the training JSONL carries the full aclImdb review text and is
+# gitignored, so a scorer that depended on it could not run on a fresh clone -
+# which would make the headline number unreproducible by anyone but us.
+SPLIT_SOURCE = {"train": "learning", "val": "checking", "answer_key": "exam"}
 TIERS = HERE / "metric_tiers.json"
 
 
@@ -81,14 +89,19 @@ def tune_thresholds(truth, preds, feelings, grid=None, verbose=False):
     worst combination available.
 
     So a feeling only earns its own threshold with at least MIN_VAL_SUPPORT
-    positives to fit against. The rest share a global threshold chosen on
-    pooled counts (micro-F1), which cannot collapse because one rare class
-    cannot drag it. Ties break toward the higher threshold, preferring
-    precision.
+    positives to fit against. The rest share one global threshold, fitted on
+    the mean F1 of just those low-support feelings - see the comment below for
+    why pooling every feeling instead is biased. Ties break toward the higher
+    threshold, preferring precision.
+
+    Support is counted over reviews that have predictions, matching what
+    confusion() scores. Counting all of `truth` instead would let a review the
+    model never saw decide whether a feeling earns its own threshold.
     """
     grid = grid or [i / 100 for i in range(5, 96, 5)]
 
-    support = {f: sum(1 for labels in truth.values() if labels[i] == 1)
+    support = {f: sum(1 for rid, labels in truth.items()
+                      if rid in preds and labels[i] == 1)
                for i, f in enumerate(feelings)}
     shared = [i for i, f in enumerate(feelings)
               if 0 < support[f] < MIN_VAL_SUPPORT]
@@ -151,6 +164,31 @@ def load_jsonl(path, key):
     return out
 
 
+def load_truth(split, feelings):
+    """{review_id: [28 ints]} from the committed label CSV for `split`.
+
+    The CSV is wide and column-named; the model's vector is positional. This
+    maps names to the canonical order from meta.json rather than trusting
+    column order, so a resaved spreadsheet cannot silently rotate the labels.
+    """
+    name = SPLIT_SOURCE.get(split)
+    if name is None:
+        sys.exit(f"unknown split {split!r}; expected one of "
+                 f"{', '.join(SPLIT_SOURCE)}")
+    path = LABELS / f"{name}_labels.csv"
+    if not path.exists():
+        sys.exit(f"{path} not found - run scripts/08_export_labels.py first.")
+    with open(path, encoding="utf-8", newline="") as fh:
+        rows = list(csv.DictReader(fh))
+    if not rows:
+        sys.exit(f"{path} is empty.")
+    missing = [f for f in feelings if f not in rows[0]]
+    if missing:
+        sys.exit(f"{path} has no column for: {', '.join(missing)}")
+    return {r["id"]: [1 if str(r[f]).strip() == "1" else 0 for f in feelings]
+            for r in rows}
+
+
 def macro_f1(scored, names):
     """Mean F1 over `names`, skipping any whose F1 is undefined."""
     vals = [scored[n]["f1"] for n in names
@@ -179,7 +217,7 @@ def main():
     reportable = tiers["tiers"]["reportable"]
     wide = set(tiers.get("wide_confidence", []))
 
-    truth = load_jsonl(TRAIN_DIR / f"{split}.jsonl", "labels")
+    truth = load_truth(split, feelings)
     preds = load_jsonl(Path(args.predictions), "scores")
     overlap = set(truth) & set(preds)
     if not overlap:
