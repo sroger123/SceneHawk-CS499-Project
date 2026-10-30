@@ -126,7 +126,8 @@ Blank rows are kept: 61% of training rows have no feeling, and those are the
 negative examples a sigmoid head needs in order to learn to say no.
 
 `data/training/` is gitignored (full review text, same reason as
-`reviews.jsonl`). `eval/preds/` is too, being regenerable in seconds.
+`reviews.jsonl`). `eval/preds/` is too. The baseline's predictions regenerate in
+seconds; the fine-tuned model's take a Colab run.
 
 ### Scoring
 
@@ -189,10 +190,39 @@ Verify after any change to the label files:
 | --- | --- |
 | predict nothing | 0.000 |
 | tf-idf + logistic regression | **0.157** |
+| `distilroberta-base`, fine-tuned | **0.303** |
 
-The baseline gets real traction on 7 feelings and scores 0 on 11. Bag-of-words
-was what Maas et al. used on this dataset, so this is a fair comparison point,
-not a strawman - if the fine-tuned model does not beat it, that is a finding.
+The baseline scores above 0 on 9 feelings and exactly 0 on the other 9; the
+fine-tuned model scores above 0 on 12. It beats the baseline on 10 feelings,
+loses on 3 (`thoughtful`, `nostalgic`, `thrilled`) and ties on 5, all at 0.
+Bag-of-words was what Maas et al. used on this dataset, so this is a fair
+comparison point, not a strawman.
+
+16 of the 18 feelings have 8 or fewer answer-key positives, so individual
+feeling scores swing on one or two reviews. The macro number is the claim;
+the per-feeling ones are not.
+
+    python eval/compare.py baseline distilroberta
+
+Resampling the 162 answer-key films 2,000 times puts the lead at +0.141, with a
+95% range of +0.083 to +0.199, and it never reaches 0. That covers which films
+were drawn, not training variation: this is one training run.
+
+### Fine-tuning (Colab)
+
+`notebooks/train_feelings.ipynb` fine-tunes `distilroberta-base` with 28
+sigmoid outputs on a T4. Upload `meta.json`, `train.jsonl`, `val.jsonl` and
+`answer_key.jsonl` from `data/training/`. It downloads probabilities in the
+baseline's format, and the scoring is the same two commands with
+`distilroberta` in place of `baseline`:
+
+    python eval/score.py eval/preds/distilroberta_val.jsonl --tune         --out eval/thresholds_distilroberta.json
+    python eval/score.py eval/preds/distilroberta_answer_key.jsonl         --thresholds eval/thresholds_distilroberta.json
+
+The notebook drops the answer key's labels on load and computes no metric on
+it. The epoch is picked on val by mean average precision, which needs no
+thresholds (baseline: 0.224 on that measure). Thresholds are then fitted by
+`score.py`, exactly as for the baseline.
 
 ## Citation
 
