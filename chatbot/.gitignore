@@ -28,6 +28,10 @@ data/exam.csv
 data/training/*
 !data/training/meta.json
 
-# Model predictions, regenerable in seconds from scripts/10_baseline.py.
-# The tuned thresholds ARE committed - they must be frozen before scoring.
-eval/preds/
+# Model predictions. The baseline's regenerate in seconds from
+# scripts/10_baseline.py. The fine-tuned model's ARE committed: they take a
+# Colab run, and a rerun would differ slightly, so they are the only way to
+# recheck the reported score. Ids and scores only, no review text.
+# The tuned thresholds are committed too - they must be frozen before scoring.
+eval/preds/*
+!eval/preds/distilroberta_*.jsonl
