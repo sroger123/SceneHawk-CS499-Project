@@ -167,10 +167,13 @@ Committed, text-free:
 | `eval/metric_tiers.json` | which feelings may be reported on |
 | `eval/thresholds_baseline.json` | the frozen cut points |
 | `eval/thresholds_distilroberta.json` | the fine-tuned model's frozen cut points |
-| `eval/preds/*.jsonl` | both systems' predictions, ids and scores only |
+| `eval/thresholds_gpt55.json` | a flat 0.5, since GPT answers yes or no |
+| `eval/gpt55_run.json` | the GPT run's model, settings, tokens and cost |
+| `eval/preds/*.jsonl` | every system's predictions, ids and scores only |
 
 Gitignored (carries review text): `data/{learning,checking,exam}.csv`,
-`data/reviews.jsonl`, `data/training/*.jsonl`, `data/labeling/batch_*.csv`.
+`data/reviews.jsonl`, `data/training/*.jsonl`, `data/labeling/batch_*.csv`,
+`eval/llm_raw/`.
 
 `corpus_ids.txt` exists because of a bug worth not repeating. 471 labelled
 reviews are non-film titles with no text (see step 6), so counts have to be
@@ -193,6 +196,7 @@ Verify after any change to the label files:
 | predict nothing | 0.000 |
 | tf-idf + logistic regression | **0.157** |
 | `distilroberta-base`, fine-tuned | **0.311** |
+| GPT 5.5 (see below) | **0.728** |
 
 The baseline scores above 0 on 9 feelings and exactly 0 on the other 9; the
 fine-tuned model scores above 0 on 14. It beats the baseline on 12 feelings,
@@ -215,6 +219,45 @@ were never saved because the notebook did not save them yet. The second scored
 0.311 and is the reported model, `distilroberta-20261031-0648`. It is kept
 because it is the one with weights, not because it scored higher. Two runs is a
 hint at training variation, not a measurement of it.
+
+### Against a general LLM
+
+    python scripts/11_llm_answer_key.py --run
+    python eval/score.py eval/preds/gpt55_answer_key.jsonl --thresholds eval/thresholds_gpt55.json
+    python eval/compare.py gpt55 distilroberta
+    python eval/by_source.py baseline distilroberta gpt55
+
+`gpt-5.5-2026-04-23` took the same 206 reviews once, with default settings and
+the prompt that wrote the training labels, for $3.24. It saw review text only.
+
+It scored **0.728**, above the fine-tuned model on all 18 feelings. Resampling
+films puts its lead at +0.412, with a 95% range of +0.329 to +0.491, and it never
+reaches 0. This does not say why. The model could be too small, have too few
+examples per feeling, or be limited by its training labels, which came from a
+cheaper LLM (DeepSeek) using the same prompt.
+
+The size of the lead needs two caveats. The win itself survives both.
+
+| group | reviews | baseline | fine-tuned | GPT 5.5 |
+| --- | --- | --- | --- | --- |
+| hand-labelled, macro-F1 | 111 | 0.158 | 0.327 | 0.774 |
+| hand-labelled, micro-F1 | 111 | 0.313 | 0.441 | 0.784 |
+| spot-check, macro-F1 | 95 | 0.142 | 0.236 | 0.568 |
+| spot-check, micro-F1 | 95 | 0.316 | 0.462 | 0.691 |
+
+- **The prompt was tuned on the hand-labelled reviews.** The pilot compared LLM
+  output with those labels, and the notebook says to refine the prompt from that.
+  GPT does better on that group, which fits this, but the groups also differ in
+  other ways, so it is not proof. The spot-check reviews played no part in the
+  pilot, and GPT still leads there. Apurba filled those in, although the notebook's
+  output shows the upload named `spotcheck_100_second_model.csv`.
+- **One answer-key review is in the prompt's examples.** An excerpt of
+  `train-unsup-11406` is a worked example with no feelings marked, and that is its
+  answer-key label. Without it the score is still 0.728.
+
+GPT costs about 1.6 cents a review, so about $545 for the 34,626 reviews above.
+That is the case for a model that runs on a free Colab GPU, if a retrain can close
+enough of the gap.
 
 ### Fine-tuning (Colab)
 
