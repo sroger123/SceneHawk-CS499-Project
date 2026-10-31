@@ -126,9 +126,8 @@ Blank rows are kept: 61% of training rows have no feeling, and those are the
 negative examples a sigmoid head needs in order to learn to say no.
 
 `data/training/` is gitignored (full review text, same reason as
-`reviews.jsonl`). The baseline's predictions in `eval/preds/` are too, since they
-regenerate in seconds. The fine-tuned model's are committed: they take a Colab
-run, and a rerun would differ slightly.
+`reviews.jsonl`). The predictions in `eval/preds/` are committed: ids and scores
+only, no review text, and they let anyone recheck both scores from a fresh clone.
 
 ### Scoring
 
@@ -168,7 +167,7 @@ Committed, text-free:
 | `eval/metric_tiers.json` | which feelings may be reported on |
 | `eval/thresholds_baseline.json` | the frozen cut points |
 | `eval/thresholds_distilroberta.json` | the fine-tuned model's frozen cut points |
-| `eval/preds/distilroberta_*.jsonl` | the fine-tuned model's predictions, ids and scores only |
+| `eval/preds/*.jsonl` | both systems' predictions, ids and scores only |
 
 Gitignored (carries review text): `data/{learning,checking,exam}.csv`,
 `data/reviews.jsonl`, `data/training/*.jsonl`, `data/labeling/batch_*.csv`.
