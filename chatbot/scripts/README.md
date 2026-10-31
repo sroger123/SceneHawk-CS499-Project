@@ -193,11 +193,11 @@ Verify after any change to the label files:
 | --- | --- |
 | predict nothing | 0.000 |
 | tf-idf + logistic regression | **0.157** |
-| `distilroberta-base`, fine-tuned | **0.303** |
+| `distilroberta-base`, fine-tuned | **0.311** |
 
 The baseline scores above 0 on 9 feelings and exactly 0 on the other 9; the
-fine-tuned model scores above 0 on 12. It beats the baseline on 10 feelings,
-loses on 3 (`thoughtful`, `nostalgic`, `thrilled`) and ties on 5, all at 0.
+fine-tuned model scores above 0 on 14. It beats the baseline on 12 feelings,
+loses on 2 (`thoughtful`, `nostalgic`) and ties on 4, all at 0.
 Bag-of-words was what Maas et al. used on this dataset, so this is a fair
 comparison point, not a strawman.
 
@@ -207,9 +207,15 @@ the per-feeling ones are not.
 
     python eval/compare.py baseline distilroberta
 
-Resampling the 162 answer-key films 2,000 times puts the lead at +0.141, with a
-95% range of +0.083 to +0.199, and it never reaches 0. That covers which films
-were drawn, not training variation: this is one training run.
+Resampling the 162 answer-key films 2,000 times puts the lead at +0.150, with a
+95% range of +0.095 to +0.204, and it never reaches 0. That covers which films
+were drawn, not training variation.
+
+Two runs exist, with identical settings. The first scored 0.303, but its weights
+were never saved because the notebook did not save them yet. The second scored
+0.311 and is the reported model, `distilroberta-20261031-0648`. It is kept
+because it is the one with weights, not because it scored higher. Two runs is a
+hint at training variation, not a measurement of it.
 
 ### Fine-tuning (Colab)
 
@@ -226,6 +232,12 @@ The notebook drops the answer key's labels on load and computes no metric on
 it. The epoch is picked on val by mean average precision, which needs no
 thresholds (baseline: 0.224 on that measure). Thresholds are then fitted by
 `score.py`, exactly as for the baseline.
+
+The trained model goes to Google Drive, in
+`MyDrive/scenehawk/models/<version>/`: weights, tokenizer and `meta.json`, about
+330 MB, so not in git. Filling the feelings table needs it. Each run gets its own
+version folder, and `distilroberta_run.json` records which one the committed
+predictions came from.
 
 ## Citation
 

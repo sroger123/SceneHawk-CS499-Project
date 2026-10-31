@@ -1,4 +1,6 @@
 {
+  "model_version": "distilroberta-20261031-0648",
+  "weights": "/content/drive/MyDrive/scenehawk/models/distilroberta-20261031-0648",
   "model": "distilroberta-base",
   "seed": 49900,
   "max_len": 512,
@@ -10,42 +12,42 @@
   "pos_weight": "sqrt(neg/pos), 1 where a feeling has no train positives",
   "selection": "best epoch by mean average precision on val",
   "best_epoch": 6,
-  "val_mean_ap": 0.3531,
+  "val_mean_ap": 0.3499,
   "history": [
     {
       "epoch": 1,
       "train_loss": 0.4527,
-      "val_mean_ap": 0.0906
+      "val_mean_ap": 0.0908
     },
     {
       "epoch": 2,
-      "train_loss": 0.3314,
-      "val_mean_ap": 0.1901
+      "train_loss": 0.3334,
+      "val_mean_ap": 0.184
     },
     {
       "epoch": 3,
-      "train_loss": 0.2723,
-      "val_mean_ap": 0.3109
+      "train_loss": 0.2773,
+      "val_mean_ap": 0.2827
     },
     {
       "epoch": 4,
-      "train_loss": 0.2228,
-      "val_mean_ap": 0.3294
+      "train_loss": 0.2262,
+      "val_mean_ap": 0.309
     },
     {
       "epoch": 5,
-      "train_loss": 0.1931,
-      "val_mean_ap": 0.3469
+      "train_loss": 0.1967,
+      "val_mean_ap": 0.3427
     },
     {
       "epoch": 6,
-      "train_loss": 0.1749,
-      "val_mean_ap": 0.3531
+      "train_loss": 0.1787,
+      "val_mean_ap": 0.3499
     }
   ],
   "versions": {
     "torch": "2.11.0+cu130",
-    "transformers": "5.20.2",
+    "transformers": "5.21.0",
     "scikit-learn": "1.6.1"
   },
   "gpu": "Tesla T4"
