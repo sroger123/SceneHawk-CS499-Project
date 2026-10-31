@@ -35,3 +35,7 @@ data/training/*
 # The tuned thresholds are committed too - they must be frozen before scoring.
 eval/preds/*
 !eval/preds/distilroberta_*.jsonl
+
+# Trained weights, about 330 MB. The notebook saves them to Google Drive; this
+# is where they land if it runs outside Colab.
+models/
