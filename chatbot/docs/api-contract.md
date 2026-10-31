@@ -3,9 +3,9 @@
 What the Next.js frontend already expects. The Week 7 backend must match this, or
 the website needs changing too.
 
-The backend lives in `chatbot/src/`. Its retrieval internals are Chroma-based and
-will be replaced in Week 7, but the endpoints below must keep working the same way
-or the website breaks. This file records the contract so the rewrite stays compatible.
+The old Chroma-based backend was removed, so nothing serves these endpoints right
+now. The new service must keep them working the same way or the website breaks.
+This file records the contract so the rewrite stays compatible.
 
 ## Endpoints
 

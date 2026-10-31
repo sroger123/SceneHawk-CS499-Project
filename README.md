@@ -131,7 +131,7 @@ Two tests, both reported in full:
 | Piece | Status |
 | --- | --- |
 | Website (search, chat, film pages) | Built, deployed on Vercel |
-| Chat service with retrieval over 1,000 TMDB films | Built, deployed on Render |
+| Chat service | Removed, to be rebuilt on the feelings model |
 | Story matching on descriptions | Built |
 | Review collection and labeling | In progress |
 | Feelings model and feelings table | Planned |
@@ -168,7 +168,7 @@ shared notes, so design choices are grounded in prior work.
 | Layer | Tools |
 | --- | --- |
 | Website | Next.js, React, TypeScript, Tailwind CSS — hosted on Vercel |
-| Chat service | Python, FastAPI, Chroma vector store — hosted on Render |
+| Chat service | To be rebuilt; the old FastAPI and Chroma service was removed |
 | Story embeddings | OpenAI `text-embedding-3-small` |
 | Feelings model | Hugging Face Transformers, trained in Google Colab |
 | Film data | TMDB (titles, genres, descriptions, ratings) |
@@ -180,10 +180,12 @@ src/app/            Website pages and API routes
 src/components/     UI components
 src/lib/            Search pipelines, retrieval, data access
 data/films/         Small hand-analyzed film set used by the search page
-chatbot/src/        Chat service: TMDB fetch, embedding, index, API server
-chatbot/data/       The 1,000-film dataset the chat service queries
+chatbot/scripts/    Data pipeline: films, reviews, labels, training data, baseline
+chatbot/notebooks/  Colab notebooks for LLM labelling and fine-tuning
+chatbot/eval/       Scoring, predictions and results for the feelings model
+chatbot/data/       Film data and labels
 eval/, scripts/     Test queries and the evaluation runner
-DEPLOY.md           Deployment guide (Vercel + Render)
+DEPLOY.md           Deployment guide (Vercel)
 ```
 
 ## Running it locally
@@ -220,6 +222,7 @@ was removed. The feelings model replaces it.
 
 ### Deployment
 
-The website deploys to Vercel and the chat service to Render. The website
-finds the chat service through one setting, `CHATBOT_URL`. Full steps are in
+The website deploys to Vercel. There is no chat service until the new one is
+built, and the website will find it through one setting, `CHATBOT_URL`. Full
+steps are in
 [DEPLOY.md](DEPLOY.md).
