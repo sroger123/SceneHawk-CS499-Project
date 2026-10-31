@@ -1,0 +1,18 @@
+{
+  "model_requested": "gpt-5.5-2026-04-23",
+  "models_returned": [
+    "gpt-5.5-2026-04-23"
+  ],
+  "settings": {
+    "reasoning": "default",
+    "temperature": "not sent",
+    "max_completion_tokens": 4000
+  },
+  "prompt_source": "notebooks/scenehawk_llm_labeling.ipynb",
+  "prompt_sha256": "685aaa6fabf28fa1ac0e2b88b5813a3e07e88b1daf9caf71690aef51f06e6a96",
+  "reviews": 206,
+  "input_tokens": 385478,
+  "output_tokens": 43622,
+  "cost_usd": 3.24,
+  "invented_words_dropped": {}
+}

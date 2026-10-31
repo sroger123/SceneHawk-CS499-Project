@@ -31,3 +31,7 @@ data/training/*
 # Trained weights, about 330 MB. The notebook saves them to Google Drive; this
 # is where they land if it runs outside Colab.
 models/
+
+# Raw LLM replies. They quote reviews, so they are not ours to redistribute.
+# The labels from them are in eval/preds/, and are committed.
+eval/llm_raw/
