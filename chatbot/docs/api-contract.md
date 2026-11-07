@@ -1,7 +1,7 @@
 # Chatbot API contract
 
 What `/api/chat` on the website accepts and returns. Since 2026-11-06 it is
-served by the website itself (`src/app/api/chat/route.ts`), which reads the
+served by the website itself (`web/src/app/api/chat/route.ts`), which reads the
 prompt and calls the Supabase function `match_films()`
 (`db/migrations/2026-11-06_search.sql`). There is no separate backend server.
 
@@ -52,7 +52,7 @@ Response (every film field is optional on the frontend):
 
 ## How a request is answered
 
-1. `src/lib/feelings/promptReader.ts` splits the message into feelings (mapped
+1. `web/src/lib/feelings/promptReader.ts` splits the message into feelings (mapped
    onto the 28, e.g. "creepy" -> unsettled), feelings to avoid ("no gore"),
    genres, genres to drop ("not horror") and story words.
 2. `match_films()` drops excluded genres, keeps requested ones (loosening the
@@ -60,4 +60,4 @@ Response (every film field is optional on the frontend):
    `film_feelings` (each divided by the best score any film has, and shrunk
    for films with few reviews), scores the story from `films.search_tsv` and
    `film_keywords`, and blends the two by `feelingWeight`.
-3. `src/lib/feelings/search.ts` writes the reply from the returned rows only.
+3. `web/src/lib/feelings/search.ts` writes the reply from the returned rows only.

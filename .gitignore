@@ -1,17 +1,17 @@
 # Dependencies
 node_modules/
-/.pnp
+/web/.pnp
 .pnp.js
 
 # Testing
-/coverage
+/web/coverage
 
-# Next.js
-/.next/
-/out/
+# Next.js (the website lives in web/)
+/web/.next/
+/web/out/
 
 # Production
-/build
+/web/build
 
 # Misc
 .DS_Store
@@ -37,9 +37,7 @@ next-env.d.ts
 .vscode/
 .idea/
 
-# Chatbot service (Python) — rebuilt/derived or secret
-chatbot/chroma_db/
-chatbot/chroma_local/
+# Python data pipeline — secrets and caches
 chatbot/.env
 chatbot/**/__pycache__/
 chatbot/**/*.pyc

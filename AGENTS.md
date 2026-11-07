@@ -3,6 +3,10 @@
 Research prototype: multi-agent RAG film discovery. See README.md for the
 full architecture and experiment design.
 
+The website lives in `web/`. Run every command below from `web/`, and read
+every path below as relative to it. The Python feelings-model pipeline is in
+`chatbot/` (see `chatbot/scripts/README.md`).
+
 ## Commands
 
 - `npm run dev` — dev server (port 3000)

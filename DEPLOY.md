@@ -11,17 +11,18 @@ The website runs with no API keys, degrading to deterministic fallbacks
 
 ## Website → Vercel
 
-1. Import this repo in Vercel. It auto-detects Next.js at the root;
-   `chatbot/` is excluded by [.vercelignore](.vercelignore). Leave the Root
-   Directory as the repo root.
+1. Import this repo in Vercel and set **Root Directory** to `web`
+   (Project > Settings > Build and Deployment). Vercel then detects Next.js
+   there and builds only the website; `chatbot/` is outside it.
 2. No environment variables are required to build. `/chat` needs
    `SUPABASE_URL` and `SUPABASE_ANON_KEY` (below). See
-   [.env.example](.env.example) for the optional ones.
+   [web/.env.example](web/.env.example) for the optional ones.
 3. Deploy.
 
 ## Local development
 
 ```bash
+cd web
 npm install
 npm run dev        # http://localhost:3000
 ```
