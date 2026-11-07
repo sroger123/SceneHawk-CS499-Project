@@ -191,16 +191,20 @@ shared notes, so design choices are grounded in prior work.
 ## Repo layout
 
 ```
-src/app/            Website pages and API routes
-src/components/     UI components
-src/lib/            Search pipelines, retrieval, data access
-data/films/         Small hand-analyzed film set used by the search page
-chatbot/scripts/    Data pipeline: films, reviews, labels, training data, baseline
-chatbot/notebooks/  Colab notebooks for LLM labelling and fine-tuning
-chatbot/eval/       Scoring, predictions and results for the feelings model
-chatbot/data/       Film data and labels
-eval/, scripts/     Test queries and the evaluation runner
-DEPLOY.md           Deployment guide (Vercel)
+web/                    The website (Next.js), deployed to Vercel
+  src/app/              Pages and API routes
+  src/components/       UI components
+  src/lib/              Search pipelines, retrieval, feelings search, data access
+  data/films/           Small hand-analyzed film set used by the search page
+  eval/, scripts/       Test queries and the evaluation runner for the search page
+chatbot/                The feelings model and its data (Python, Colab)
+  scripts/              Data pipeline: films, reviews, labels, training data, scoring
+  notebooks/            Colab notebooks: LLM labelling, fine-tuning, feelings table
+  eval/                 Scoring, predictions and results for the feelings model
+  data/                 Film data and labels
+  db/                   Supabase schema and migrations
+docs/                   Logo and other project files
+DEPLOY.md               Deployment guide (Vercel + Supabase)
 ```
 
 ## Running it locally
@@ -208,6 +212,7 @@ DEPLOY.md           Deployment guide (Vercel)
 ### Website
 
 ```bash
+cd web
 npm install
 npm run dev        # http://localhost:3000
 ```

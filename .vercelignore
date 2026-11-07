@@ -1,3 +1,0 @@
-# Keep the Python data pipeline out of the Vercel build. Only the Next.js app
-# at the repo root is deployed; chatbot/ runs locally and in Colab.
-chatbot/
