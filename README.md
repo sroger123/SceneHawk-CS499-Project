@@ -232,12 +232,13 @@ python scripts/03_extract_reviews.py # clean the review text
 See [chatbot/scripts/README.md](chatbot/scripts/README.md) for what each
 script reads and writes.
 
-The `/chat` page has no backend right now — the old Chroma retrieval service
-was removed. The feelings model replaces it.
+The `/chat` page answers from the feelings and description tables in
+Supabase. Until those are filled and `SUPABASE_URL` / `SUPABASE_ANON_KEY`
+are set, it says it isn't connected.
 
 ### Deployment
 
-The website deploys to Vercel. There is no chat service until the new one is
-built, and the website will find it through one setting, `CHATBOT_URL`. Full
-steps are in
-[DEPLOY.md](DEPLOY.md).
+Only the website is deployed, to Vercel. There is no separate chat server:
+the website's `/api/chat` route calls `match_films()` in Supabase, and the
+feelings model runs offline in Colab to fill the feelings table. Full steps
+are in [DEPLOY.md](DEPLOY.md).
