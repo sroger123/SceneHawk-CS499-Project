@@ -1,7 +1,7 @@
 import Link from "next/link";
 
 // Shared UI primitives. Pages compose these instead of re-typing class
-// strings, so the look stays consistent. Rules: .claude/skills/scenehawk-design
+// strings, so the look stays consistent.
 
 type Children = { children: React.ReactNode };
 

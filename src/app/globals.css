@@ -3,7 +3,7 @@
 /*
  * SceneHawk design tokens — the single source of truth for color + type.
  * Use the generated utilities (bg-surface, text-fg-muted, border-line, …)
- * instead of hard-coded hex values. See .claude/skills/scenehawk-design.
+ * instead of hard-coded hex values.
  */
 @theme {
   --font-display: var(--font-playfair), Georgia, serif;
