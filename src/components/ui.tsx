@@ -1,7 +1,7 @@
 import Link from "next/link";
 
 // Shared UI primitives in the CoDeed house style. Pages compose these instead
-// of re-typing class strings. Rules: .claude/skills/scenehawk-design
+// of re-typing class strings.
 
 type Children = { children: React.ReactNode };
 

@@ -34,9 +34,9 @@ full architecture and experiment design.
   `Film` type, then `npm run ingest` to validate. All five `analysis`
   fields need ≥1 real sentence — they ARE the retrieval corpus.
 - "Cinematic Match" scores are retrieval scores — keep the honest labeling.
-- UI: follow `.claude/skills/scenehawk-design/SKILL.md` — design tokens in
-  `src/app/globals.css`, shared primitives in `src/components/ui.tsx`, no
-  hard-coded hex colors, and no sign-in/accounts (nothing to protect).
+- UI: design tokens in `src/app/globals.css`, shared primitives in
+  `src/components/ui.tsx`, no hard-coded hex colors, and no sign-in/accounts
+  (nothing to protect).
 
 ## Environment
 
