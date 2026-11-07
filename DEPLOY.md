@@ -1,8 +1,10 @@
 # Deploying SceneHawk
 
-Right now there is **one** deployable piece: the Next.js website. The Python
-half of the repo is data-collection scripts (`chatbot/scripts/`) and a training
-notebook that runs in Colab — neither is a service, so neither is deployed.
+There is **one** deployable piece: the Next.js website, on Vercel. The Python
+half of the repo is the data pipeline (`chatbot/scripts/`) and the Colab
+notebooks that train the model and fill the feelings table. None of it is a
+service, so none of it is deployed. There is no separate chat server: `/chat`
+reads from Supabase directly (below).
 
 The website runs with no API keys, degrading to deterministic fallbacks
 (see [AGENTS.md](AGENTS.md)).
@@ -55,10 +57,12 @@ it never runs on Vercel. Rerun step 3 whenever the model is retrained.
    [chatbot/notebooks/fill_feelings_table.ipynb](chatbot/notebooks/fill_feelings_table.ipynb)
    in Colab and Run all (T4 GPU, about 15 minutes). It loads the model saved in
    Google Drive by `train_feelings.ipynb` and runs
-   `scripts/12_score_reviews.py`.
+   `scripts/12_score_reviews.py`. It looks in `MyDrive/scenehawk/models/`, so
+   run it signed in to the Google account that trained the model.
 4. **Vercel.** Project > Settings > Environment Variables, add
    `SUPABASE_URL` and `SUPABASE_ANON_KEY` (Supabase > Project Settings > API),
-   then redeploy. `CHATBOT_URL` is no longer used and can be deleted.
+   then redeploy. Do this only after step 1: until the migration turns on row
+   level security, the anon key can read and change the tables.
 5. **Check.** `GET /api/chat` on the deployed site should return
    `{"status":"ok","films":…,"films_with_feelings":…,"model_version":"…"}`.
 
