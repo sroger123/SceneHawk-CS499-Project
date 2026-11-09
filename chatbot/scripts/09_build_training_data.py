@@ -6,7 +6,7 @@ order of docs/feelings-list.md. The order is read from that file rather than
 from a CSV header, so column 7 means the same feeling in training, in scoring
 and in the database.
 
-A review with no feelings is kept, not dropped. 61% of the training rows are
+A review with no feelings is kept, not dropped. 60% of the training rows are
 blank, and those are the negative examples - a sigmoid head needs to see
 reviews that are not `amused` in order to learn what `amused` is. Dropping
 them would leave the model unable to say no to anything.

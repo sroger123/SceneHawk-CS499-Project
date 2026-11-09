@@ -8,8 +8,9 @@ data/reviews.jsonl
 # into Supabase, not git.
 data/labeling/batch_*.csv
 data/labeling/*.docx
-# Exports from the team's label-checking page also carry the review text.
-data/labels/scenehawk-labels-checked*.csv
+# Exports from the team's label-checking page also carry the review text,
+# wherever they are saved (data/labels/ or data/labeling/).
+data/label*/scenehawk-labels-checked*.csv
 !data/labeling/manifest.json
 
 # The split files carry the full aclImdb review text (~5 MB), which is not ours
