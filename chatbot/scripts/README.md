@@ -135,7 +135,7 @@ for the wider comparison.
 
 Label order comes from `docs/feelings-list.md`, the same parser step 7 uses, so
 column 7 means the same feeling in training, in scoring and in the database.
-Blank rows are kept: 61% of training rows have no feeling, and those are the
+Blank rows are kept: 60% of training rows have no feeling, and those are the
 negative examples a sigmoid head needs in order to learn to say no.
 
 `data/training/` is gitignored (full review text, same reason as
@@ -179,8 +179,10 @@ Committed, text-free:
 | `data/training/meta.json` | the canonical feeling order, and train positives |
 | `eval/metric_tiers.json` | which feelings may be reported on |
 | `eval/thresholds_baseline.json` | the frozen cut points |
-| `eval/thresholds_distilroberta.json` | the fine-tuned model's frozen cut points |
+| `eval/thresholds_distilroberta.json` | the first fine-tuned model's frozen cut points |
+| `eval/thresholds_distilroberta_e12_headtail_s49900.json` | the retrained model's frozen cut points |
 | `eval/thresholds_gpt55.json` | a flat 0.5, since GPT answers yes or no |
+| `eval/distilroberta_run.json`, `eval/distilroberta_e12_headtail_s49900_run.json` | each fine-tuned run's settings, epochs and val scores |
 | `eval/gpt55_run.json` | the GPT run's model, settings, tokens and cost |
 | `eval/preds/*.jsonl` | every system's predictions, ids and scores only |
 
@@ -207,9 +209,14 @@ Verify after any change to the label files:
 | | team's 111 reviews, 11 feelings | all 206 reviews, 18 reportable |
 | --- | --- | --- |
 | predict nothing | 0.000 | 0.000 |
-| tf-idf + logistic regression | **0.222** | 0.157 |
-| `distilroberta-base`, fine-tuned | **0.410** | 0.311 |
-| GPT 5.5 (see below) | **0.726** | 0.728 |
+| tf-idf + logistic regression | **0.226** | 0.151 |
+| `distilroberta-base`, first model (6 epochs) | **0.401** | 0.298 |
+| `distilroberta-base`, retrained (see below) | **0.503** | 0.423 |
+| GPT 5.5 (see below) | **0.735** | 0.724 |
+
+These are scored against the answer key as corrected on 2026-11-08 (two marks
+cleared; see `docs/answer-key-corrections.md`). Before that the baseline, the
+first model and GPT scored 0.222, 0.410 and 0.726 on the 111.
 
 The first column is the headline. The other 95 scored reviews are spot-check
 rows, which started as DeepSeek's labels and were then hand checked, so they are
@@ -220,8 +227,10 @@ which is what the second column uses. `eval/score.py` and `eval/compare.py` repo
 the first column by default, and the second with `--wide`.
 
 On the 111, the baseline scores above 0 on 6 feelings and exactly 0 on the other
-5; the fine-tuned model scores above 0 on 10. It beats the baseline on 8 feelings,
-loses on 2 (`thoughtful`, `nostalgic`) and ties on 1 (`confused`, at 0).
+5; the first fine-tuned model scores above 0 on 10. It beats the baseline on 8
+feelings, loses on 2 (`thoughtful`, `nostalgic`) and ties on 1 (`confused`, at
+0). The retrained model scores above 0 on all 11 and beats the baseline on 10,
+losing only on `nostalgic`.
 Bag-of-words was what Maas et al. used on this dataset, so this is a fair
 comparison point, not a strawman.
 
@@ -231,44 +240,89 @@ the per-feeling ones are not.
 
     python eval/compare.py baseline distilroberta
 
-Resampling those 74 films 2,000 times puts the lead at +0.180, with a 95% range
-of +0.097 to +0.263, and it never reaches 0. Over all 206 reviews it is +0.150,
-with a range of +0.095 to +0.204. That covers which films were drawn, not training
+Resampling those 74 films 2,000 times puts the lead at +0.166, with a 95% range
+of +0.070 to +0.257, and it reaches 0 in 1 resample of 2,000. Over all 206
+reviews it is +0.143, with a range of +0.084 to +0.195. That covers which films were drawn, not training
 variation.
 
-Two runs exist, with identical settings. Over all 206 reviews, the first scored
-0.303, but its weights were never saved because the notebook did not save them
-yet. The second scored 0.311 and is the reported model,
-`distilroberta-20261031-0648`. It is kept because it is the one with weights, not
-because it scored higher. Two runs is a hint at training variation, not a
-measurement of it.
+The first model had two runs with identical settings. Over all 206 reviews, the
+first scored 0.303, but its weights were never saved because the notebook did
+not save them yet. The second scored 0.311 (0.298 against the corrected key) and
+is the first model, `distilroberta-20261031-0648`. It was kept because it is the
+one with weights, not because it scored higher.
+
+### Retrained model (2026-11-08)
+
+`distilroberta-base` again, on the hand-checked training labels (see "Hand-checked
+training labels" below), with two settings changed:
+
+- **12 epochs instead of 6.** Both 6-epoch runs had picked their last epoch, so
+  they were still improving.
+- **Long reviews keep their start and end** (`TRUNCATION = "head_tail"`): the
+  first 128 tokens and the last 384, instead of the first 512. Reviews often end
+  on how the film left the viewer.
+
+Every run is listed, including the ones not picked. The pick was made on val
+only, by mean average precision; the answer-key columns played no part in it.
+
+| run | val mAP | val macro-F1 | team's 111 | all 206 |
+| --- | --- | --- | --- | --- |
+| first model, 6 epochs, first 512 tokens | 0.350 | 0.385 | 0.401 | 0.298 |
+| 6 epochs, checked labels (v2, 2026-11-08) | 0.354 | 0.389 | 0.367* | 0.286* |
+| **12 epochs, head_tail, seed 49900 (picked)** | **0.433** | **0.468** | **0.503** | **0.423** |
+| 12 epochs, head_tail, seed 49901 | 0.427 | 0.463 | 0.462 | 0.392 |
+| 16 epochs, head_tail, seed 49901 | 0.430 | 0.443 | 0.543 | 0.465 |
+
+\* against the answer key before the 2026-11-08 correction; v2's predictions
+were not kept, so it cannot be rescored.
+
+The picked run is `distilroberta_e12_headtail_s49900-20261108-2130`; only its
+predictions are committed. Its weights, and the other runs', are in Google Drive.
+
+- **The gain is real.** Every new-settings run is about +0.08 above the first
+  model on val mAP, and +0.06 to +0.08 on val macro-F1. On all 206 reviews the picked run leads the first model by
+  +0.112 (95% range +0.038 to +0.186, never 0 in 2,000 resamples).
+- **On the 111 alone it is likely, not certain:** +0.089, range -0.021 to
+  +0.195, at or below 0 in 117 of 2,000. It beats the first model on 7 feelings,
+  loses on 3 (`moved`, `thrilled`, `disgusted`) and ties on 1 (`tense`).
+- **A seed moves the 111 score by about 0.04.** The two 12-epoch seeds score
+  0.503 and 0.462. Quote the picked run as 0.503 and the three runs as 0.46 to
+  0.54, mean 0.50; never the 0.543 alone.
+- **16 epochs did not help on val.** It peaked at epoch 11 and its val macro-F1
+  is lower. It scored highest on the answer key, but choosing it for that would
+  make the answer key a tuning set.
+
+The labels changed together with the settings, but v2 (checked labels, old
+settings) did not improve, so the gain comes from the longer training, the
+start-and-end cut, or both. A 12-epoch run with `TRUNCATION = "head"` would
+separate them.
 
 ### Against a general LLM
 
     python scripts/11_llm_answer_key.py --run
     python eval/score.py eval/preds/gpt55_answer_key.jsonl --thresholds eval/thresholds_gpt55.json
-    python eval/compare.py gpt55 distilroberta
-    python eval/by_source.py baseline distilroberta gpt55
+    python eval/compare.py distilroberta_e12_headtail_s49900 gpt55
+    python eval/by_source.py baseline distilroberta distilroberta_e12_headtail_s49900 gpt55
 
 `gpt-5.5-2026-04-23` took the same 206 reviews once, with default settings and
 the prompt that wrote the training labels, for $3.24. It saw review text only.
 
-On the team's 111 it scored **0.726**, above the fine-tuned model on all 11
-feelings. Resampling films puts its lead at +0.318, with a 95% range of +0.187 to
-+0.441, and it never reaches 0. Over all 206 reviews it scored 0.728, with a lead
-of +0.412. This does not say why. The model could be too small, have too few
-examples per feeling, or be limited by its training labels, which came from a
-cheaper LLM (DeepSeek) using the same prompt.
+On the team's 111 it scored **0.735**. Its lead over the first model was +0.334
+(95% range +0.207 to +0.448); over the retrained model it is **+0.245** (range
++0.105 to +0.399), and it never reaches 0. Over all 206 reviews it scored 0.724,
+a lead of +0.307 over the retrained model. This does not say why. The model
+could be too small, have too few examples per feeling, or be limited by its
+training labels, which came from a cheaper LLM (DeepSeek) using the same prompt.
 
 The size of the lead needs caveats, because no part of the answer key is a clean
 test of GPT. This table uses the 18 reportable feelings.
 
-| group | reviews | baseline | fine-tuned | GPT 5.5 |
-| --- | --- | --- | --- | --- |
-| hand-labelled, macro-F1 | 111 | 0.158 | 0.327 | 0.774 |
-| hand-labelled, micro-F1 | 111 | 0.313 | 0.441 | 0.784 |
-| spot-check, macro-F1 | 95 | 0.142 | 0.236 | 0.568 |
-| spot-check, micro-F1 | 95 | 0.316 | 0.462 | 0.691 |
+| group | reviews | baseline | first model | retrained | GPT 5.5 |
+| --- | --- | --- | --- | --- | --- |
+| hand-labelled, macro-F1 | 111 | 0.138 | 0.299 | 0.403 | 0.760 |
+| hand-labelled, micro-F1 | 111 | 0.305 | 0.427 | 0.517 | 0.782 |
+| spot-check, macro-F1 | 95 | 0.142 | 0.236 | 0.329 | 0.568 |
+| spot-check, micro-F1 | 95 | 0.316 | 0.462 | 0.484 | 0.691 |
 
 - **The prompt was tuned on the hand-labelled reviews.** The pilot compared LLM
   output with those labels, and the notebook says to refine the prompt from that.
@@ -279,7 +333,7 @@ test of GPT. This table uses the 18 reportable feelings.
   were then hand checked, so that lead is not independent evidence.
 - **One answer-key review is in the prompt's examples.** An excerpt of
   `train-unsup-11406` is a worked example with no feelings marked, and that is its
-  answer-key label. Without it the scores are still 0.726 and 0.728.
+  answer-key label. Without it the scores are still 0.735 and 0.724.
 
 GPT costs about 1.6 cents a review, so about $577 for the 36,680 reviews above.
 That is the case for a model that runs on a free Colab GPU, if a retrain can close
@@ -287,30 +341,49 @@ enough of the gap.
 
 ### Fine-tuning (Colab)
 
-`notebooks/train_feelings.ipynb` fine-tunes `distilroberta-base` with 28
-sigmoid outputs on a T4. Upload `meta.json`, `train.jsonl`, `val.jsonl` and
-`answer_key.jsonl` from `data/training/`. It downloads probabilities in the
-baseline's format, and the scoring is the same two commands with
-`distilroberta` in place of `baseline`:
+`notebooks/train_feelings.ipynb` fine-tunes `distilroberta-base` (or
+`roberta-base`) with 28 sigmoid outputs on a free Colab T4. Upload `meta.json`,
+`train.jsonl`, `val.jsonl` and `answer_key.jsonl` from `data/training/`. The
+settings cell holds every knob: `MODEL`, `EPOCHS` (12), `TRUNCATION`
+(`head_tail`, or `head` for the first 512 tokens), `HEAD` (128) and `SEED`.
+The run name is built from them, e.g. `distilroberta_e12_headtail_s49900`, so
+runs never overwrite each other. A 12-epoch `distilroberta-base` run takes about
+20 minutes.
 
-    python eval/score.py eval/preds/distilroberta_val.jsonl --tune         --out eval/thresholds_distilroberta.json
-    python eval/score.py eval/preds/distilroberta_answer_key.jsonl         --thresholds eval/thresholds_distilroberta.json
+It downloads `<RUN>_preds.zip`: probabilities in the baseline's format and a run
+record. Unzip it into `eval/preds/`, move `<RUN>_run.json` up to `eval/`, then:
+
+    python eval/score.py eval/preds/<RUN>_val.jsonl --tune         --out eval/thresholds_<RUN>.json
+    python eval/score.py eval/preds/<RUN>_answer_key.jsonl         --thresholds eval/thresholds_<RUN>.json
+
+Compare runs on val only: `val_mean_ap` in the run record, which needs no
+thresholds (baseline: 0.224 on that measure), and the val macro-F1 that `--tune`
+prints. Score the answer key for the one you pick. If more runs are scored on
+it, report all of them, as in the table above.
 
 The notebook drops the answer key's labels on load and computes no metric on
-it. The epoch is picked on val by mean average precision, which needs no
-thresholds (baseline: 0.224 on that measure). Thresholds are then fitted by
-`score.py`, exactly as for the baseline.
+it. The epoch is picked on val by mean average precision.
 
 The trained model goes to Google Drive, in
-`MyDrive/scenehawk/models/<version>/`: weights, tokenizer and `meta.json`, about
-330 MB, so not in git. Filling the feelings table needs it. Each run gets its own
-version folder, and `distilroberta_run.json` records which one the committed
-predictions came from.
+`MyDrive/scenehawk/models/<version>/`: weights, tokenizer, `meta.json` and
+`scenehawk_settings.json` (how long reviews were cut), about 330 MB, so not in
+git. Filling the feelings table needs it, and step 12 reads the settings file
+so it cuts reviews the same way. Each run gets its own version folder, and its
+run record says which one the committed predictions came from.
 
-## Citation
+### Hand-checked training labels
 
-Maas, A. L., Daly, R. E., Pham, P. T., Huang, D., Ng, A. Y., & Potts, C. (2011).
-*Learning Word Vectors for Sentiment Analysis.* ACL-HLT 2011, 142-150.
+The team checked 1,000 of DeepSeek's learning-split labels on the
+label-checking page: 877 kept as they were (`agree`) and 123 corrected
+(`fixed`). On 2026-11-08 the checked labels were written over the same reviews
+in `data/learning.csv`, and steps 8 and 9 were rerun. That changed 129 labels on
+113 of the 2,643 training reviews; `data/labels/learning_labels.csv` holds the
+result.
+
+Only `learning.csv` changed. These labels started from DeepSeek's, so they train
+the model and never grade it; `checking.csv` and `exam.csv` were not touched.
+The page's export (`data/labeling/scenehawk-labels-checked.csv`) carries the
+review text, so it is gitignored. The one-off merge script was not kept.
 
 ## Week 5-6 - the feelings and description tables
 
@@ -329,5 +402,17 @@ model folder's name. Per-review scores are cached in `data/feelings/`, so a
 stopped run resumes. `--dry-run` scores without writing; `--reviews
 data/reviews.jsonl --limit 200` is a quick local test.
 
-It works with any saved version of the model, so the table can be filled now
-with the first model and refilled after each retrain.
+It cuts long reviews the way the model was trained, read from the model
+folder's `scenehawk_settings.json`; a folder without one (the first model) gets
+the first 512 tokens. The start-up line says which, e.g. `reviews cut by
+head_tail at 512 tokens`.
+
+It works with any saved version of the model. The table currently holds the
+first model's scores; refill it with the retrained one,
+`distilroberta_e12_headtail_s49900-20261108-2130`, which the fill notebook is
+set to use.
+
+## Citation
+
+Maas, A. L., Daly, R. E., Pham, P. T., Huang, D., Ng, A. Y., & Potts, C. (2011).
+*Learning Word Vectors for Sentiment Analysis.* ACL-HLT 2011, 142-150.

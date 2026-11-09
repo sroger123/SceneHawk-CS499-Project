@@ -11,18 +11,18 @@
       "amused",
       "moved",
       "thoughtful",
-      "nostalgic",
       "tense",
+      "nostalgic",
       "angry",
       "sad",
       "thrilled",
       "unsettled",
       "curious",
-      "disturbed",
       "disgusted",
+      "disturbed",
       "joyful",
-      "heartwarming",
       "inspired",
+      "heartwarming",
       "uncomfortable",
       "awed",
       "confused"
@@ -46,52 +46,52 @@
   },
   "wide_confidence": [
     "moved",
-    "nostalgic",
     "tense",
+    "nostalgic",
     "angry",
     "sad",
     "thrilled",
     "unsettled",
     "curious",
-    "disturbed",
     "disgusted",
+    "disturbed",
     "joyful",
-    "heartwarming",
     "inspired",
+    "heartwarming",
     "uncomfortable",
     "awed",
     "confused"
   ],
   "counts": {
     "amused": {
-      "train": 507,
+      "train": 512,
       "val": 84,
       "answer": 37
     },
     "moved": {
-      "train": 137,
+      "train": 135,
       "val": 32,
       "answer": 8
     },
     "thoughtful": {
-      "train": 87,
+      "train": 95,
       "val": 21,
       "answer": 13
     },
-    "nostalgic": {
-      "train": 83,
-      "val": 13,
-      "answer": 6
-    },
     "tense": {
-      "train": 74,
+      "train": 77,
       "val": 20,
       "answer": 8
     },
+    "nostalgic": {
+      "train": 76,
+      "val": 13,
+      "answer": 6
+    },
     "angry": {
-      "train": 67,
+      "train": 71,
       "val": 6,
-      "answer": 5
+      "answer": 4
     },
     "sad": {
       "train": 65,
@@ -99,12 +99,12 @@
       "answer": 7
     },
     "thrilled": {
-      "train": 64,
+      "train": 62,
       "val": 15,
       "answer": 6
     },
     "unsettled": {
-      "train": 53,
+      "train": 54,
       "val": 12,
       "answer": 3
     },
@@ -118,40 +118,45 @@
       "val": 10,
       "answer": 2
     },
+    "disgusted": {
+      "train": 39,
+      "val": 2,
+      "answer": 6
+    },
     "disturbed": {
       "train": 38,
       "val": 5,
       "answer": 4
     },
-    "disgusted": {
-      "train": 36,
-      "val": 2,
-      "answer": 7
-    },
     "joyful": {
-      "train": 31,
+      "train": 30,
       "val": 6,
       "answer": 6
+    },
+    "inspired": {
+      "train": 28,
+      "val": 7,
+      "answer": 5
     },
     "heartwarming": {
       "train": 26,
       "val": 9,
       "answer": 7
     },
-    "inspired": {
-      "train": 25,
-      "val": 7,
-      "answer": 5
-    },
     "uncomfortable": {
-      "train": 18,
+      "train": 24,
       "val": 1,
       "answer": 4
     },
     "awed": {
-      "train": 17,
+      "train": 22,
       "val": 9,
       "answer": 4
+    },
+    "confused": {
+      "train": 16,
+      "val": 1,
+      "answer": 3
     },
     "bittersweet": {
       "train": 14,
@@ -168,20 +173,15 @@
       "val": 3,
       "answer": 0
     },
-    "confused": {
-      "train": 6,
-      "val": 1,
-      "answer": 3
-    },
-    "dread": {
-      "train": 6,
-      "val": 0,
-      "answer": 1
-    },
     "tender": {
-      "train": 6,
+      "train": 7,
       "val": 1,
       "answer": 0
+    },
+    "dread": {
+      "train": 4,
+      "val": 0,
+      "answer": 1
     },
     "drained": {
       "train": 4,

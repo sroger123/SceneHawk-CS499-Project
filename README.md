@@ -17,10 +17,11 @@ of films, each with the reason it matches. It handles three kinds of request:
 - **Story** — "a heist that goes wrong"
 - **Both, with or without a genre** — "a hopeful sci-fi about first contact"
 
-- Personalized discovery:** Helps users find films based on mood, atmosphere, and emotional experience rather than relying only on genres or plot summaries.
-- Transparent recommendations:** Provides matching scores and review evidence so users can understand why each film was recommended.
-- Research-driven design:** Combines a fine-tuned feelings model with story matching and systematic evaluation against general-purpose chatbots.
-- 
+What sets it apart:
+
+- **Personalized discovery:** Helps users find films based on mood, atmosphere, and emotional experience rather than relying only on genres or plot summaries.
+- **Transparent recommendations:** Provides matching scores and review evidence so users can understand why each film was recommended.
+- **Research-driven design:** Combines a fine-tuned feelings model with story matching and systematic evaluation against general-purpose chatbots.
 
 ## Why not just ask a chatbot?
 
@@ -50,7 +51,7 @@ database. The **query** half runs each time someone asks for a film.
 ```
 Reviews ──▶ Feelings model (ours) ──▶ scores per review ──▶ average per film ──▶ FEELINGS TABLE
 
-Descriptions + genres ──▶ embeddings + common keywords ─────────────────────▶ DESCRIPTION TABLE
+Descriptions + genres ──▶ keywords + full-text index ───────────────────────▶ DESCRIPTION TABLE
 ```
 
 1. **Collect.** For each film: reviews, description, genres and basic facts.
@@ -59,8 +60,10 @@ Descriptions + genres ──▶ embeddings + common keywords ──────�
 3. **Average per film.** Review scores are averaged into one row per film. The
    review count is stored too, so films with few reviews can be labeled
    "low confidence".
-4. **Index the story.** Each film's description is embedded, and the most
-   common description keywords are stored for matching.
+4. **Index the story.** Each film's title, description and genres get a
+   full-text search index in Postgres, and its most distinctive description
+   keywords (TF-IDF) plus genres are stored for matching. No embedding model
+   or API key is needed.
 
 ### Query: answering a request (live)
 
@@ -106,7 +109,7 @@ This is the part of SceneHawk we train ourselves.
 | --- | --- |
 | **Feelings list** | Fix 20–30 feelings, each with a one-line definition and an example. These are the model's outputs and the table's columns. |
 | **Labeling guide** | One main rule: label what the viewer *felt while watching*, not whether they liked the film. |
-| **Training labels** | DeepSeek labels about 3,100 usable reviews using the guide. We hand check 100 of its labels separately. |
+| **Training labels** | DeepSeek labels about 3,100 usable reviews using the guide. The team hand-checked 1,000 of its training labels and fixed 123, and separately checked 100 more for the answer key's spot-check rows. |
 | **Answer key** | The team's hand labels on 111 reviews. The model never trains on these. |
 | **Fine-tune** | Start from `distilroberta-base` on Hugging Face and fine-tune it in Google Colab so it outputs a 0–1 score per feeling. |
 | **Improve** | Find the feelings the model confuses, fix bad labels, add examples, retrain. |
@@ -133,9 +136,14 @@ hand-labelled reviews:
 
 | System | Score |
 | --- | --- |
-| Word-based baseline (TF-IDF) | 0.222 |
-| Our model (`distilroberta-base`) | 0.410 |
-| GPT 5.5 | 0.726 |
+| Word-based baseline (TF-IDF) | 0.226 |
+| Our model, first version (6 epochs) | 0.401 |
+| **Our model, retrained 2026-11-08** (12 epochs, start + end of long reviews) | **0.503** |
+| GPT 5.5 | 0.735 |
+
+The retrained model was picked on the separate checking reviews, not on this
+test. Three runs with the new settings scored 0.46 to 0.54 here (mean 0.50),
+so a different seed moves the score by a few points.
 
 GPT's instructions were refined on these same reviews, so its lead may be
 inflated. The method and the wider comparison are in
@@ -149,8 +157,8 @@ inflated. The method and the wider comparison are in
 | Chat page | Answers from the feelings and description tables in Supabase (no separate server) |
 | Story matching on descriptions | Built |
 | Review collection and labeling | Done |
-| Feelings model | First version trained and tested, being improved |
-| Feelings table | Script and Colab notebook ready (`12_score_reviews.py`); fill after each retrain |
+| Feelings model | Retrained 2026-11-08: 0.503 on the answer key, up from 0.401 |
+| Feelings table | Filled by the first model; to be refilled with the retrained one (`fill_feelings_table.ipynb`, step 12) |
 | Genre filter, feeling match, combined scoring | Built (`match_films()` in Supabase) |
 | Results screen with scores and evidence | Built on the chat page |
 
@@ -168,7 +176,7 @@ shared notes, so design choices are grounded in prior work.
 
 ### Still to decide
 
-- The final base model (`distilroberta-base` so far)
+- The final base model (`distilroberta-base` so far; `roberta-base` not tried yet)
 - What score counts as good enough for our model
 - Whether our model or a general LLM labels every review
 
@@ -184,7 +192,7 @@ shared notes, so design choices are grounded in prior work.
 | --- | --- |
 | Website | Next.js, React, TypeScript, Tailwind CSS — hosted on Vercel |
 | Chat backend | Supabase (Postgres function `match_films()`), called from the Next.js API route |
-| Story embeddings | OpenAI `text-embedding-3-small` |
+| Story matching | Postgres full-text search and TF-IDF keywords in Supabase (the prototype search page can use OpenAI embeddings if a key is set) |
 | Feelings model | Hugging Face Transformers, trained in Google Colab |
 | Film data | TMDB (titles, genres, descriptions, ratings) |
 

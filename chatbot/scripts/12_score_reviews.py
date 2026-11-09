@@ -93,12 +93,38 @@ def load_model(path):
     return tok, model, labels, device
 
 
-def score_batches(tok, model, device, rows, batch):
+def read_settings(path):
+    """How the model was trained to cut long reviews, from the
+    scenehawk_settings.json the training notebook saves with it. Models saved
+    before that file existed (v1) were trained on the first MAX_LEN tokens."""
+    s = {"max_len": MAX_LEN, "truncation": "head", "head": None}
+    f = Path(path) / "scenehawk_settings.json"
+    if f.exists():
+        s.update(json.loads(f.read_text(encoding="utf-8")))
+    if s["truncation"] not in ("head", "head_tail") or (
+            s["truncation"] == "head_tail" and not 0 < s["head"] < s["max_len"]):
+        sys.exit(f"{f}: unknown truncation settings {s}")
+    return s
+
+
+def encode(tok, texts, settings):
+    """Cut reviews exactly as in training (notebooks/train_feelings.ipynb)."""
+    m = settings["max_len"]
+    if settings["truncation"] == "head":
+        return tok(texts, truncation=True, max_length=m, padding=True,
+                   return_tensors="pt")
+    h = settings["head"]
+    ids = [x if len(x) <= m else x[:h] + x[-(m - h):]
+           for x in tok(texts)["input_ids"]]
+    return tok.pad([{"input_ids": x, "attention_mask": [1] * len(x)} for x in ids],
+                   return_tensors="pt")
+
+
+def score_batches(tok, model, device, rows, batch, settings):
     import torch
     for i in range(0, len(rows), batch):
         chunk = rows[i:i + batch]
-        enc = tok([r[2] for r in chunk], truncation=True, max_length=MAX_LEN,
-                  padding=True, return_tensors="pt").to(device)
+        enc = encode(tok, [r[2] for r in chunk], settings).to(device)
         with torch.no_grad(), torch.autocast("cuda", dtype=torch.float16,
                                              enabled=device == "cuda"):
             logits = model(**enc).logits
@@ -124,7 +150,9 @@ def main():
     cache = OUT_DIR / f"review_scores_{version}.jsonl"
 
     tok, model, feelings, device = load_model(args.model)
-    print(f"model {version} on {device}, {len(feelings)} feelings")
+    settings = read_settings(args.model)
+    print(f"model {version} on {device}, {len(feelings)} feelings, "
+          f"reviews cut by {settings['truncation']} at {settings['max_len']} tokens")
 
     # ---- 1. score every review not already in the cache -------------------
     done = {}
@@ -144,7 +172,7 @@ def main():
 
     t0, n = time.time(), 0
     with open(cache, "a", encoding="utf-8") as fh:
-        for chunk, probs in score_batches(tok, model, device, rows, args.batch):
+        for chunk, probs in score_batches(tok, model, device, rows, args.batch, settings):
             for (rid, tmdb, _), p in zip(chunk, probs):
                 rec = {"id": rid, "tmdb_id": tmdb, "scores": [round(float(v), 5) for v in p]}
                 fh.write(json.dumps(rec) + "\n")
