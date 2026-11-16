@@ -6,10 +6,14 @@ import { buttonClass } from "@/components/ui";
 
 export default function SearchBox({
   initial = "",
-  mode = "multi",
+  action = "/search",
+  mode,
   autoFocus = false,
 }: {
   initial?: string;
+  /** The page that answers: /search (the tables) or /search/prototype. */
+  action?: string;
+  /** Prototype only: which of the four comparison systems to run. */
   mode?: string;
   autoFocus?: boolean;
 }) {
@@ -19,7 +23,8 @@ export default function SearchBox({
   function submit(e: React.FormEvent) {
     e.preventDefault();
     if (!q.trim()) return;
-    router.push(`/search?q=${encodeURIComponent(q.trim())}&mode=${mode}`);
+    const modeParam = mode ? `&mode=${encodeURIComponent(mode)}` : "";
+    router.push(`${action}?q=${encodeURIComponent(q.trim())}${modeParam}`);
   }
 
   return (

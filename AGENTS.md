@@ -24,7 +24,9 @@ every path below as relative to it. The Python feelings-model pipeline is in
 - `src/lib/agents/` — interpreter, dimension agents, ranker, explainer
 - `src/lib/pipelines/` — the 4 comparison systems (`runSearch` = entry point)
 - `src/lib/explore.ts` — per-dimension film-to-film connections
-- `src/app/` — pages (home, /search, /film/[id]) + API routes
+- `src/app/` — pages + API routes: /search and /chat answer from the Supabase
+  feelings and description tables (`src/lib/feelings/`); /search/prototype runs
+  the four comparison systems over the 29-film corpus; /film/[id]
 - `eval/queries.json` + `scripts/run-eval.ts` — experiment harness
 
 ## Conventions

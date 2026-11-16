@@ -5,8 +5,8 @@ export const metadata = { title: "Chat" };
 
 // Feelings search: /api/chat reads the prompt and asks Supabase to rank films
 // by the feelings table (filled offline by the trained model) and the
-// description table. Distinct from /search, which runs the four comparison
-// pipelines over the curated 29-film corpus.
+// description table. /search runs the same query as a search page; the four
+// comparison pipelines over the curated 29-film corpus are at /search/prototype.
 export default function ChatPage() {
   return (
     <Container className="max-w-[860px] pb-24">

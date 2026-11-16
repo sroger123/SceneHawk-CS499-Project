@@ -168,7 +168,7 @@ export default function Home() {
           {PIPELINE_MODES.map((m) => (
             <li key={m}>
               <Link
-                href={`/search?mode=${m}`}
+                href={`/search/prototype?mode=${m}`}
                 className="grid items-center gap-x-[clamp(16px,3vw,40px)] gap-y-2 bg-canvas px-[clamp(18px,3vw,28px)] py-[22px] transition-colors hover:bg-surface-2 sm:grid-cols-[1.1fr_1.6fr_auto]"
               >
                 <span className="text-base font-medium text-fg">{PIPELINE_LABELS[m]}</span>
