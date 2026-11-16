@@ -40,7 +40,7 @@ const SYSTEM_BLURBS: Record<PipelineMode, string> = {
 const DIFFS = [
   {
     t: "Search by feeling, not genre",
-    b: "Ask for “cozy for a rainy Sunday” or “a tense slow burn” and get films that feel that way, not just films with the right label.",
+    b: "Ask for “a touching war drama” or “a funny road trip movie” and get films that feel that way, not just films with the right label.",
   },
   {
     t: "Evidence with every pick",

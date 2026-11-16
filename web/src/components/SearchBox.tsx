@@ -52,7 +52,7 @@ export default function SearchBox({
             enterKeyHint="search"
             value={q}
             onChange={(e) => setQ(e.target.value)}
-            placeholder="Something unsettling and slow-burning…"
+            placeholder="A touching war drama…"
             className="w-full bg-transparent py-3 text-base text-fg placeholder:text-fg-faint focus:outline-none"
             autoFocus={autoFocus}
           />
