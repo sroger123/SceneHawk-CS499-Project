@@ -389,7 +389,9 @@ review text, so it is gitignored. The one-off merge script was not kept.
 
 Run `db/migrations/2026-11-06_search.sql` in the Supabase SQL editor once
 first. It adds the description search index, the `match_films()` function
-the website calls, and row level security.
+the website calls, and row level security. Then run
+`db/migrations/2026-11-15_evidence_quote.sql`, which makes the quote under each
+result start at the sentence that shows the feeling.
 
     python scripts/13_build_descriptions.py    # film_keywords, seconds, no GPU
     # notebooks/fill_feelings_table.ipynb in Colab, which runs:
@@ -407,10 +409,10 @@ folder's `scenehawk_settings.json`; a folder without one (the first model) gets
 the first 512 tokens. The start-up line says which, e.g. `reviews cut by
 head_tail at 512 tokens`.
 
-It works with any saved version of the model. The table currently holds the
-first model's scores; refill it with the retrained one,
-`distilroberta_e12_headtail_s49900-20261108-2130`, which the fill notebook is
-set to use.
+It works with any saved version of the model. The table holds the retrained
+model's scores, `distilroberta_e12_headtail_s49900-20261108-2130`, filled
+2026-11-15 for all 2,871 films with reviews (28 rows each). The fill notebook is
+set to use that model.
 
 ## Citation
 

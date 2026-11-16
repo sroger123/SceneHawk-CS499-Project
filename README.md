@@ -158,7 +158,7 @@ inflated. The method and the wider comparison are in
 | Story matching on descriptions | Built |
 | Review collection and labeling | Done |
 | Feelings model | Retrained 2026-11-08: 0.503 on the answer key, up from 0.401 |
-| Feelings table | Filled by the first model; to be refilled with the retrained one (`fill_feelings_table.ipynb`, step 12) |
+| Feelings table | Filled 2026-11-15 by the retrained model, all 2,871 films (`fill_feelings_table.ipynb`, step 12) |
 | Genre filter, feeling match, combined scoring | Built (`match_films()` in Supabase) |
 | Results screen with scores and evidence | Built on the chat page |
 
