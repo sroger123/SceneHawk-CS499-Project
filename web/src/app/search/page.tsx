@@ -19,14 +19,16 @@ export const metadata = { title: "Search" };
 
 const RESULTS = 10;
 
-// Each of these reads cleanly into feelings, story words and genres, and uses
-// feelings the model has enough examples of.
+// Each of these reads cleanly into feelings, story words and genres, and asks
+// for a feeling with plenty of training examples (amused 512, moved 135,
+// thoughtful 95, nostalgic 76, thrilled 62). Rare feelings such as cozy (4),
+// hopeful (8) or dread (4) give weak scores, so they don't make good examples.
 const STARTERS = [
-  "something cozy for a rainy Sunday",
-  "a tense heist movie, not horror",
+  "a funny road trip movie",
+  "a touching war drama",
+  "a thought-provoking sci-fi",
+  "a nostalgic summer camp movie",
   "a thrilling space adventure",
-  "something heartwarming about friendship",
-  "a hopeful sci-fi about first contact",
 ];
 
 function Chip({ label, values }: { label: string; values: string[] }) {

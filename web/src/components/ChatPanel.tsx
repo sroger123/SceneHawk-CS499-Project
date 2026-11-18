@@ -75,11 +75,12 @@ interface Turn {
   films?: RetrievedFilm[];
 }
 
+// Feelings with plenty of training examples; see the note on /search's STARTERS.
 const STARTERS = [
-  "something cozy for a rainy Sunday",
-  "a tense slow-burn that builds dread",
-  "a melancholic film about loneliness",
-  "a hopeful sci-fi about first contact",
+  "a funny road trip movie",
+  "a touching war drama",
+  "a thought-provoking sci-fi",
+  "a nostalgic summer camp movie",
 ];
 
 export default function ChatPanel() {
@@ -218,7 +219,7 @@ export default function ChatPanel() {
           enterKeyHint="send"
           value={input}
           onChange={(e) => setInput(e.target.value)}
-          placeholder="A tense slow-burn that builds dread…"
+          placeholder="A funny road trip movie…"
           className={`${inputClass} flex-1 bg-canvas`}
         />
         <button
