@@ -1,6 +1,6 @@
 # SceneHawk — Review Labeling Guide
 
-**Status:** in use for Week 3 labelling. The feelings list it refers to was frozen on 18 October 2026 — all 28 feelings, nothing cut or merged.
+**Status:** in use for Week 3 labelling. The feelings list it refers to was frozen on 18 October 2026 — all 28 feelings, nothing cut or merged. Keep labelling with all 28: since 16 November 2026 the model merges seven rare ones when it reads the labels (`feeling-merges.json`), so a `dread` mark still counts, as `tense`.
 
 Revise this guide after the agreement check on the 25 shared reviews. Where two labellers disagree, the fault is in a definition here, not in the labeller.
 

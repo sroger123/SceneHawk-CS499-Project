@@ -1,6 +1,30 @@
 {
   "feelings": [
     "tense",
+    "scared",
+    "unsettled",
+    "disturbed",
+    "sad",
+    "moved",
+    "bittersweet",
+    "heartwarming",
+    "uplifted",
+    "joyful",
+    "thrilled",
+    "amused",
+    "awed",
+    "curious",
+    "thoughtful",
+    "nostalgic",
+    "inspired",
+    "confused",
+    "uncomfortable",
+    "angry",
+    "disgusted"
+  ],
+  "label_order": "docs/feelings-list.md, document order, after the merges",
+  "source_feelings": [
+    "tense",
     "dread",
     "scared",
     "unsettled",
@@ -29,23 +53,27 @@
     "disgusted",
     "drained"
   ],
-  "label_order": "docs/feelings-list.md, document order",
+  "merged_into": {
+    "dread": "tense",
+    "grief-stricken": "sad",
+    "lonely": "sad",
+    "cozy": "heartwarming",
+    "tender": "heartwarming",
+    "hopeful": "uplifted"
+  },
+  "dropped": [
+    "drained"
+  ],
   "train_positives": {
-    "tense": 77,
-    "dread": 4,
+    "tense": 81,
     "scared": 48,
     "unsettled": 54,
     "disturbed": 38,
     "sad": 65,
-    "grief-stricken": 1,
-    "lonely": 0,
     "moved": 135,
     "bittersweet": 14,
-    "cozy": 4,
-    "heartwarming": 26,
-    "tender": 7,
-    "hopeful": 8,
-    "uplifted": 13,
+    "heartwarming": 36,
+    "uplifted": 20,
     "joyful": 30,
     "thrilled": 62,
     "amused": 512,
@@ -57,13 +85,12 @@
     "confused": 16,
     "uncomfortable": 24,
     "angry": 71,
-    "disgusted": 39,
-    "drained": 4
+    "disgusted": 39
   },
   "splits": {
     "train": {
       "rows": 2643,
-      "marks": 1522,
+      "marks": 1515,
       "blank": 1582,
       "skipped_not_in_corpus": 386
     },
@@ -75,7 +102,7 @@
     },
     "answer_key": {
       "rows": 206,
-      "marks": 141,
+      "marks": 140,
       "blank": 116,
       "skipped_not_in_corpus": 5
     }

@@ -2,7 +2,7 @@
 """Step 10 - the bag-of-words baseline the fine-tuned model has to beat.
 
 TF-IDF plus one-vs-rest logistic regression: one independent binary
-classifier per feeling, which is the same shape as 28 sigmoid heads, just
+classifier per feeling, which is the same shape as the model's sigmoid heads, just
 without the language model. Maas et al. (2011) used bag-of-words on this
 dataset, so this is the honest comparison point rather than a strawman.
 
@@ -68,7 +68,7 @@ def main():
                                C=1.0, random_state=SEED)
         m.fit(Xtr, y)
         models[f] = m
-    print(f"fitted {len(models)} of 28 feelings")
+    print(f"fitted {len(models)} of {len(feelings)} feelings")
     if skipped:
         print(f"unfittable (one class only): {', '.join(skipped)}")
 

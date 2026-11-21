@@ -27,7 +27,7 @@ import sys
 from pathlib import Path
 
 from score import (LABELS, SPLIT_SOURCE, TIERS, TRAIN_DIR, confusion,
-                   load_jsonl, load_truth, macro_f1, prf, team_view)
+                   load_preds, load_truth, macro_f1, prf, team_view)
 
 HERE = Path(__file__).resolve().parent
 SEED = 49900                                           # same seed as sampling
@@ -35,7 +35,8 @@ ROUNDS = 2000
 
 
 def load_system(name):
-    preds = load_jsonl(HERE / "preds" / f"{name}_answer_key.jsonl", "scores")
+    meta = json.loads((TRAIN_DIR / "meta.json").read_text(encoding="utf-8"))
+    preds = load_preds(HERE / "preds" / f"{name}_answer_key.jsonl", meta["feelings"])
     path = HERE / f"thresholds_{name}.json"
     if not path.exists():
         sys.exit(f"{path} not found - run score.py --tune on val first.")

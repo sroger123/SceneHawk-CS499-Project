@@ -48,7 +48,7 @@ const DIFFS = [
   },
   {
     t: "Our own feelings model",
-    b: "A fine-tuned model reads film reviews and scores 28 feelings. Every film gets one fixed profile, so the same film always scores the same.",
+    b: "A fine-tuned model reads film reviews and scores 21 feelings. Every film gets one fixed profile, so the same film always scores the same.",
   },
 ];
 
@@ -56,7 +56,7 @@ const DIFFS = [
 const PIPELINE = [
   {
     t: "Reviews in, feelings out",
-    b: "The model reads each review and scores what the viewer felt: tense, moved, amused and 25 more.",
+    b: "The model reads each review and scores what the viewer felt: tense, moved, amused and 18 more.",
   },
   {
     t: "One profile per film",
@@ -209,7 +209,7 @@ export default function Home() {
         </SectionTitle>
         <p className="mt-4 max-w-[60ch] text-[15px] leading-relaxed text-fg-muted">
           Ratings say whether people liked a film. Reviews say how it felt. We
-          fine-tuned a model to read reviews for 28 feelings and built a profile
+          fine-tuned a model to read reviews for 21 feelings and built a profile
           for every film from them.
         </p>
         <div className="mt-9 grid gap-7 [grid-template-columns:repeat(auto-fit,minmax(220px,1fr))]">

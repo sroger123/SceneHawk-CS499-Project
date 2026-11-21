@@ -1,10 +1,15 @@
 #!/usr/bin/env python3
 """Step 9 - turn the labelled splits into something a model can train on.
 
-One JSON object per review: the text, and a 28-long vector of 0/1 in the fixed
-order of docs/feelings-list.md. The order is read from that file rather than
-from a CSV header, so column 7 means the same feeling in training, in scoring
-and in the database.
+One JSON object per review: the text, and a vector of 0/1, one per feeling the
+model learns, in the fixed order of docs/feelings-list.md. The order is read
+from that file rather than from a CSV header, so column 7 means the same
+feeling in training, in scoring and in the database.
+
+The labels use all 28 feelings. The model learns 21: docs/feeling-merges.json
+folds 6 rare feelings into a common one (a review marked `dread` counts as
+`tense`) and drops `drained`. The CSVs are never changed, so the merge can be
+changed or undone by editing that file and re-running this script.
 
 A review with no feelings is kept, not dropped. 60% of the training rows are
 blank, and those are the negative examples - a sigmoid head needs to see
@@ -28,6 +33,7 @@ ROOT = Path(__file__).resolve().parent.parent          # chatbot/
 OUT = ROOT / "data" / "training"
 REVIEWS = ROOT / "data" / "reviews.jsonl"
 FEELINGS_MD = ROOT / "docs" / "feelings-list.md"
+MERGES = ROOT / "docs" / "feeling-merges.json"
 
 # source file   split name the model sees
 SPLITS = [("learning", "train"), ("checking", "val"), ("exam", "answer_key")]
@@ -54,10 +60,27 @@ def parse_feelings(path):
     return names
 
 
+def model_feelings(feelings, merges):
+    """The feelings the model learns, in document order, and for each one the
+    label columns that count toward it: itself plus anything merged into it."""
+    merged, dropped = merges["merged_into"], set(merges["dropped"])
+    bad = [f for f in [*merged, *merged.values(), *dropped] if f not in feelings]
+    if bad:
+        sys.exit(f"{MERGES.name} names feelings not in the list: {bad}")
+    kept = [f for f in feelings if f not in merged and f not in dropped]
+    lost = [t for t in merged.values() if t not in kept]
+    if lost:
+        sys.exit(f"{MERGES.name} merges into feelings that are themselves "
+                 f"merged or dropped: {lost}")
+    return kept, {f: [f] + [s for s, t in merged.items() if t == f] for f in kept}
+
+
 def main():
-    feelings = parse_feelings(FEELINGS_MD)
-    if len(feelings) != 28:
-        sys.exit(f"parsed {len(feelings)} feelings, expected 28.")
+    source = parse_feelings(FEELINGS_MD)
+    if len(source) != 28:
+        sys.exit(f"parsed {len(source)} feelings, expected 28.")
+    merges = json.loads(MERGES.read_text(encoding="utf-8"))
+    feelings, sources = model_feelings(source, merges)
 
     known = set()
     if REVIEWS.exists():
@@ -72,7 +95,7 @@ def main():
             sys.exit(f"{src} not found.")
         rows = list(csv.DictReader(open(src, encoding="utf-8")))
         cols = [c for c in rows[0] if c not in META]
-        unknown = [c for c in cols if c not in set(feelings)]
+        unknown = [c for c in cols if c not in set(source)]
         if unknown:
             sys.exit(f"{name}.csv has columns that are not feelings: {unknown}")
 
@@ -81,8 +104,8 @@ def main():
             if known and r["id"] not in known:
                 skipped += 1
                 continue
-            vec = [1 if str(r.get(f, "")).strip() == "1" else 0
-                   for f in feelings]
+            vec = [1 if any(str(r.get(s, "")).strip() == "1" for s in sources[f])
+                   else 0 for f in feelings]
             marks += sum(vec)
             if not any(vec):
                 blank += 1
@@ -102,19 +125,23 @@ def main():
 
     # Per-feeling positives in train, so the trainer can weight the loss
     # without re-reading the CSVs.
-    pos = [0] * 28
+    pos = [0] * len(feelings)
     for line in open(OUT / "train.jsonl", encoding="utf-8"):
         for i, v in enumerate(json.loads(line)["labels"]):
             pos[i] += v
     (OUT / "meta.json").write_text(json.dumps({
         "feelings": feelings,
-        "label_order": "docs/feelings-list.md, document order",
+        "label_order": "docs/feelings-list.md, document order, after the merges",
+        "source_feelings": source,
+        "merged_into": merges["merged_into"],
+        "dropped": merges["dropped"],
         "train_positives": dict(zip(feelings, pos)),
         "splits": summary,
         "note": "Blank rows are negative examples, not missing data.",
     }, indent=2) + "\n")
 
-    print(f"\nlabel vector: 28 wide, order from docs/feelings-list.md")
+    print(f"\nlabel vector: {len(feelings)} wide, order from docs/feelings-list.md "
+          f"after {MERGES.name}")
     print(f"rarest in train: " + ", ".join(
         f"{f}={n}" for f, n in sorted(zip(feelings, pos), key=lambda x: x[1])[:5]))
     print(f"written to {OUT.relative_to(ROOT)}")

@@ -3,10 +3,17 @@
 **Status: FROZEN.** Agreed by the team on 18 October 2026. All 28 feelings kept as
 drafted; nothing cut, merged or renamed.
 
-This list is the source of truth. Three other places must match it exactly:
-the `feelings` table in `chatbot/db/schema.sql`, the label list in the training
-notebook, and the feeling columns in the labelling sheet. Changing it means
-changing all four.
+**Merged for the model, 16 November 2026.** Labelling still uses all 28 below. The
+model learns 21: seven feelings had almost no training examples (0 to 8 each), so
+`feeling-merges.json` folds dread into tense, grief-stricken and lonely into sad,
+cozy and tender into heartwarming, hopeful into uplifted, and drops drained. The
+merge is applied when labels are read, never to the label files themselves.
+
+This list is the source of truth for the labels. Three other places must match it
+exactly: the `feelings` table in `chatbot/db/schema.sql`, the feeling columns in the
+label files, and the feeling columns in the labelling sheet. Changing it means
+changing all four. The model's feelings come from this list plus
+`feeling-merges.json`.
 
 ## The labeling rule
 Label **what the viewer felt while watching** — *not* whether they liked the film.
