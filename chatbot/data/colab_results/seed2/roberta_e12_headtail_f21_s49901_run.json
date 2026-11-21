@@ -1,0 +1,87 @@
+{
+  "model_version": "roberta_e12_headtail_f21_s49901-20261121-1726",
+  "weights": "/content/drive/MyDrive/scenehawk/models/roberta_e12_headtail_f21_s49901-20261121-1726",
+  "model": "roberta-base",
+  "seed": 49901,
+  "max_len": 512,
+  "truncation": "head_tail",
+  "head": 128,
+  "batch": 8,
+  "accum": 2,
+  "epochs": 12,
+  "lr": 3e-05,
+  "warmup": 0.1,
+  "weight_decay": 0.01,
+  "pos_weight": "sqrt(neg/pos), 1 where a feeling has no train positives",
+  "selection": "best epoch by mean average precision on val",
+  "best_epoch": 12,
+  "val_mean_ap": 0.5118,
+  "history": [
+    {
+      "epoch": 1,
+      "train_loss": 0.5551,
+      "val_mean_ap": 0.0907
+    },
+    {
+      "epoch": 2,
+      "train_loss": 0.3969,
+      "val_mean_ap": 0.2806
+    },
+    {
+      "epoch": 3,
+      "train_loss": 0.2976,
+      "val_mean_ap": 0.3855
+    },
+    {
+      "epoch": 4,
+      "train_loss": 0.2302,
+      "val_mean_ap": 0.4484
+    },
+    {
+      "epoch": 5,
+      "train_loss": 0.1875,
+      "val_mean_ap": 0.4947
+    },
+    {
+      "epoch": 6,
+      "train_loss": 0.1483,
+      "val_mean_ap": 0.4849
+    },
+    {
+      "epoch": 7,
+      "train_loss": 0.1227,
+      "val_mean_ap": 0.4777
+    },
+    {
+      "epoch": 8,
+      "train_loss": 0.1051,
+      "val_mean_ap": 0.5065
+    },
+    {
+      "epoch": 9,
+      "train_loss": 0.0903,
+      "val_mean_ap": 0.5039
+    },
+    {
+      "epoch": 10,
+      "train_loss": 0.0785,
+      "val_mean_ap": 0.5033
+    },
+    {
+      "epoch": 11,
+      "train_loss": 0.0722,
+      "val_mean_ap": 0.5073
+    },
+    {
+      "epoch": 12,
+      "train_loss": 0.0673,
+      "val_mean_ap": 0.5118
+    }
+  ],
+  "versions": {
+    "torch": "2.14.1+cu130",
+    "transformers": "5.22.1",
+    "scikit-learn": "1.6.1"
+  },
+  "gpu": "Tesla T4"
+}

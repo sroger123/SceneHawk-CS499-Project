@@ -16,6 +16,10 @@ absence is recorded by the row not existing, which is what the schema means by
 The spot-check rows started as DeepSeek's labels and were then hand checked, so
 they are kept apart from the team's. Neither split is ever trained on.
 
+learning.csv also holds 150 reviews hand labelled by roger on 11/21 (listed in
+data/labeling/more_manifest.json). Those load as source 'human', labeler
+'roger', still in the 'train' split.
+
 Run db/migrations/2026-11-02_spot_check_split.sql once on a database created
 before that split existed. Run 04_load_supabase.py first (films and reviews must
 exist), and 06_expand_films.py before that (the splits reference films the
@@ -57,6 +61,9 @@ SPLITS = [
 ]
 # exam.csv rows the team was not assigned
 SPOT_CHECK = ("spot_check", "llm", "deepseek_hand_checked")
+# learning.csv rows hand labelled from data/labeling/batch_more_all_labeled.csv
+MORE_MANIFEST = ROOT / "data" / "labeling" / "more_manifest.json"
+HAND_TRAIN = ("train", "human", "roger")
 META = {"id", "imdb_id", "review", "film", "year", "labeler", "notes", "source"}
 
 
@@ -102,6 +109,10 @@ def main():
 
     manifest = json.loads(MANIFEST.read_text(encoding="utf-8"))
     team = {rid for ids in manifest["assignments"].values() for rid in ids}
+    hand_train = set()
+    if MORE_MANIFEST.exists():
+        more = json.loads(MORE_MANIFEST.read_text(encoding="utf-8"))
+        hand_train = {r["id"] for r in more["reviews"]}
 
     labels, splits, spot_ids, missing_total = [], [], [], 0
     for name, split, source, labeler in SPLITS:
@@ -121,8 +132,10 @@ def main():
                 continue
             present += 1
             spot = name == "exam" and r["id"] not in team
+            hand = name == "learning" and r["id"] in hand_train
             row_split, row_source, row_labeler = (
-                SPOT_CHECK if spot else (split, source, labeler))
+                SPOT_CHECK if spot else HAND_TRAIN if hand
+                else (split, source, labeler))
             if spot:
                 spot_ids.append(r["id"])
             splits.append((r["id"], row_split))

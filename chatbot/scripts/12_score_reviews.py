@@ -17,10 +17,17 @@ Reviews come from Supabase (the reviews table) or, with --reviews, from
 data/reviews.jsonl. Per-review scores are cached as they are made, so a run
 that stops can be restarted and picks up where it left off.
 
+Several models (the same setup trained with different seeds) can be given at
+once: each scores every review into its own cache, then each review's scores
+are averaged across them with equal weights before the per-film step. This is
+the same average eval/seed_avg.py evaluates. It needs --version, since there is
+no single folder name to store.
+
 Run:
   python scripts/12_score_reviews.py --model <saved model folder>             # score + write
   python scripts/12_score_reviews.py --model <folder> --dry-run               # score, no DB writes
   python scripts/12_score_reviews.py --model <folder> --reviews data/reviews.jsonl --limit 200
+  python scripts/12_score_reviews.py --model <f1> <f2> <f3> --version <name>  # average 3 models
 
 Needs: torch, transformers, numpy, psycopg2-binary, python-dotenv, and
 SUPABASE_DB_URL in chatbot/.env (or the environment) unless --dry-run.
@@ -132,29 +139,15 @@ def score_batches(tok, model, device, rows, batch, settings):
         yield chunk, probs
 
 
-def main():
-    ap = argparse.ArgumentParser(description=__doc__.split("\n")[0])
-    ap.add_argument("--model", required=True, help="saved model folder (has config.json)")
-    ap.add_argument("--version", help="model_version to store (default: the folder name)")
-    ap.add_argument("--reviews", help="read reviews from this JSONL instead of Supabase")
-    ap.add_argument("--batch", type=int, default=32)
-    ap.add_argument("--limit", type=int, help="score only the first N reviews (testing)")
-    ap.add_argument("--min-reviews", type=int, default=1,
-                    help="skip films with fewer scored reviews than this")
-    ap.add_argument("--dry-run", action="store_true", help="score and save files, no DB writes")
-    args = ap.parse_args()
-    load_env()
-
-    version = args.version or Path(args.model).resolve().name
-    OUT_DIR.mkdir(parents=True, exist_ok=True)
-    cache = OUT_DIR / f"review_scores_{version}.jsonl"
-
-    tok, model, feelings, device = load_model(args.model)
-    settings = read_settings(args.model)
-    print(f"model {version} on {device}, {len(feelings)} feelings, "
+def score_model(path, reviews, cache_name, args):
+    """Score every review with one model, resuming from its cache file.
+    Returns the feeling order and {review_id: {"id", "tmdb_id", "scores"}}."""
+    cache = OUT_DIR / f"review_scores_{cache_name}.jsonl"
+    tok, model, feelings, device = load_model(path)
+    settings = read_settings(path)
+    print(f"model {Path(path).resolve().name} on {device}, {len(feelings)} feelings, "
           f"reviews cut by {settings['truncation']} at {settings['max_len']} tokens")
 
-    # ---- 1. score every review not already in the cache -------------------
     done = {}
     if cache.exists():
         with open(cache, encoding="utf-8") as fh:
@@ -163,7 +156,7 @@ def main():
                 done[r["id"]] = r
         print(f"resuming: {len(done)} reviews already scored in {cache.name}")
 
-    rows = [r for r in read_reviews(args) if r[0] not in done]
+    rows = [r for r in reviews if r[0] not in done]
     if args.limit:
         rows = rows[:max(0, args.limit - len(done))]
     # Similar lengths in a batch means less padding: noticeably faster.
@@ -183,6 +176,78 @@ def main():
                 print(f"  {n}/{len(rows)} reviews, {rate:.0f}/s")
             fh.flush()
     print(f"scored {n} new reviews in {time.time() - t0:.0f}s")
+
+    # Free the GPU before the next model loads.
+    import torch
+    del model
+    if device == "cuda":
+        torch.cuda.empty_cache()
+    return feelings, done
+
+
+def average_runs(runs, version, limited):
+    """Equal-weight mean of each review's scores across the models (the same
+    averaging as eval/seed_avg.py, which is how the average was evaluated).
+    Only reviews every model scored are kept, and outside a --limit test they
+    must be all of them."""
+    ids = set.intersection(*(set(r) for r in runs))
+    dropped = len(set.union(*(set(r) for r in runs))) - len(ids)
+    if dropped and not limited:
+        sys.exit(f"{dropped} reviews were not scored by every model. Their caches "
+                 f"in {OUT_DIR} disagree; delete the ones that differ and run again.")
+    if dropped:
+        print(f"WARNING: {dropped} reviews were not scored by every model; left out")
+    out = {}
+    for rid in ids:
+        m = np.mean([r[rid]["scores"] for r in runs], axis=0)
+        out[rid] = {"id": rid, "tmdb_id": runs[0][rid]["tmdb_id"],
+                    "scores": [round(float(v), 5) for v in m]}
+    path = OUT_DIR / f"review_scores_{version}.jsonl"
+    with open(path, "w", encoding="utf-8") as fh:
+        for rid in sorted(out):
+            fh.write(json.dumps(out[rid]) + "\n")
+    print(f"averaged {len(runs)} models with equal weights over {len(out)} reviews, "
+          f"saved to {path.name}")
+    return out
+
+
+def main():
+    ap = argparse.ArgumentParser(description=__doc__.split("\n")[0])
+    ap.add_argument("--model", required=True, nargs="+",
+                    help="saved model folder (has config.json); give several to "
+                         "average their scores with equal weights")
+    ap.add_argument("--version", help="model_version to store (default: the folder "
+                                      "name; required with several models)")
+    ap.add_argument("--reviews", help="read reviews from this JSONL instead of Supabase")
+    ap.add_argument("--batch", type=int, default=32)
+    ap.add_argument("--limit", type=int, help="score only the first N reviews (testing)")
+    ap.add_argument("--min-reviews", type=int, default=1,
+                    help="skip films with fewer scored reviews than this")
+    ap.add_argument("--dry-run", action="store_true", help="score and save files, no DB writes")
+    args = ap.parse_args()
+    load_env()
+
+    models = args.model
+    if len(models) > 1 and not args.version:
+        sys.exit("several models: give --version, the model_version the averaged "
+                 "scores are stored under")
+    names = [Path(m).resolve().name for m in models]
+    if len(set(names)) != len(names):
+        sys.exit(f"the same model is listed twice: {names}")
+    version = args.version or names[0]
+    OUT_DIR.mkdir(parents=True, exist_ok=True)
+
+    # ---- 1. score every review not already in each model's cache ----------
+    # Reviews are read once and shared by all the models.
+    reviews = list(read_reviews(args))
+    runs = []
+    for path, name in zip(models, names):
+        # One model keeps the old cache name (by version), so existing caches
+        # still resume. Several models each cache under their own folder name.
+        cache_name = version if len(models) == 1 else name
+        feelings, scored = score_model(path, reviews, cache_name, args)
+        runs.append(scored)
+    done = runs[0] if len(runs) == 1 else average_runs(runs, version, bool(args.limit))
 
     # ---- 2. average per film, keep the strongest review per feeling -------
     by_film = defaultdict(list)
@@ -210,7 +275,7 @@ def main():
     top = defaultdict(list)
     for tmdb, feeling, score, *_ in out_rows:
         top[feeling].append((score, tmdb))
-    for f in ("tense", "amused", "sad", "cozy"):
+    for f in ("tense", "amused", "sad", "heartwarming"):
         if top[f]:
             best3 = sorted(top[f], reverse=True)[:3]
             print(f"  top {f}: " + ", ".join(f"{t} ({s:.2f})" for s, t in best3))

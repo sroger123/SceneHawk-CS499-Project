@@ -422,6 +422,19 @@ the model and never grade it; `checking.csv` and `exam.csv` were not touched.
 The page's export (`data/labeling/scenehawk-labels-checked.csv`) carries the
 review text, so it is gitignored. The one-off merge script was not kept.
 
+### Extra hand labels for weak feelings (11/21)
+
+`14_sample_weak_feelings.py` picked 150 more reviews likely to show confused,
+thrilled, nostalgic, joyful or moved (30 each, at most one per film, no film from
+`checking.csv` or `exam.csv`). Roger hand labelled all 150 with the guide
+(`data/labeling/batch_more_all_labeled.csv`, gitignored because it carries the
+review text): 261 labels, 118 reviews with at least one feeling.
+
+They were appended to `data/learning.csv` and steps 8 and 9 were rerun, so
+training grew from 2,643 to 2,793 reviews. `checking.csv` and `exam.csv` were
+not touched. Step 7 loads these 150 as source `human`, labeler `roger`, still
+in the `train` split, using the ids in `data/labeling/more_manifest.json`.
+
 ## Week 5-6 - the feelings and description tables
 
 Run `db/migrations/2026-11-06_search.sql` in the Supabase SQL editor once
@@ -433,6 +446,8 @@ result start at the sentence that shows the feeling.
     python scripts/13_build_descriptions.py    # film_keywords, seconds, no GPU
     # notebooks/fill_feelings_table.ipynb in Colab, which runs:
     python scripts/12_score_reviews.py --model <saved model folder>
+    # or several folders (same setup, different seeds), averaged:
+    python scripts/12_score_reviews.py --model <f1> <f2> <f3> --version <name>
 
 Step 12 needs `torch` and `transformers` (Colab has both) and a GPU to be
 quick. It scores every review in `reviews`, averages per film, and replaces
@@ -448,8 +463,19 @@ head_tail at 512 tokens`.
 
 It works with any saved version of the model. The table holds the retrained
 model's scores, `distilroberta_e12_headtail_s49900-20261108-2130`, filled
-2026-11-15 for all 2,871 films with reviews (28 rows each). The fill notebook is
-set to use that model.
+2026-11-15 for all 2,871 films with reviews (28 rows each).
+
+With several `--model` folders, each model scores every review into its own
+cache (`review_scores_<folder>.jsonl`), and each review's scores are averaged
+across them with equal weights before the per-film step: the same average
+`eval/seed_avg.py` evaluates. `--version` names the result, since there is no
+single folder name. If the models' caches cover different reviews it stops
+rather than write films with reviews missing.
+
+As of 2026-11-21 the fill notebook is set to the average of the three
+roberta-base f21 seeds (49900, 49901, 49902), stored as
+`roberta_e12_headtail_f21_seedavg3-20261121` (21 rows per film). It starts
+with `DRY_RUN = True`; the table changes only when that is set to False.
 
 ## Citation
 
