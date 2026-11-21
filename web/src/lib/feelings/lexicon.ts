@@ -1,22 +1,49 @@
-// Word lists the prompt reader uses to map plain English onto the 28 frozen
-// feelings (chatbot/docs/feelings-list.md) and the TMDB genre names.
+// Word lists the prompt reader uses to map plain English onto the feelings the
+// model scores and the TMDB genre names.
 // Deterministic on purpose: works with no API key, and the same prompt always
 // reads the same way.
 
+// The 21 feelings in the feelings table. The labels use 28
+// (chatbot/docs/feelings-list.md); on 2026-11-16 the rarest were merged away
+// (chatbot/docs/feeling-merges.json). Keep this file in step with that one.
 export const FEELINGS = [
-  "tense", "dread", "scared", "unsettled", "disturbed",
-  "sad", "grief-stricken", "lonely", "moved", "bittersweet",
-  "cozy", "heartwarming", "tender", "hopeful", "uplifted", "joyful",
+  "tense", "scared", "unsettled", "disturbed",
+  "sad", "moved", "bittersweet",
+  "heartwarming", "uplifted", "joyful",
   "thrilled", "amused", "awed", "curious",
   "thoughtful", "nostalgic", "inspired", "confused",
-  "uncomfortable", "angry", "disgusted", "drained",
+  "uncomfortable", "angry", "disgusted",
 ] as const;
 
 export type Feeling = (typeof FEELINGS)[number];
 
+// The merged labels and the feeling each now counts as: asking for "cozy"
+// searches heartwarming. `drained` was dropped, so its words match nothing.
+const MERGED_INTO = {
+  dread: "tense",
+  "grief-stricken": "sad",
+  lonely: "sad",
+  cozy: "heartwarming",
+  tender: "heartwarming",
+  hopeful: "uplifted",
+} as const satisfies Record<string, Feeling>;
+const DROPPED = ["drained"] as const;
+
+type Label = Feeling | keyof typeof MERGED_INTO | (typeof DROPPED)[number];
+
+function resolve(labels: Label[]): Feeling[] {
+  const out = new Set<Feeling>();
+  for (const l of labels) {
+    if (l in MERGED_INTO) out.add(MERGED_INTO[l as keyof typeof MERGED_INTO]);
+    else if ((FEELINGS as readonly string[]).includes(l)) out.add(l as Feeling);
+  }
+  return [...out];
+}
+
 // Single words and short phrases -> feelings. Phrases are matched first.
-// Every feeling maps to itself as well (added below).
-const WORDS: Record<string, Feeling[]> = {
+// Written against the 28 labels; resolve() maps them onto the 21 below.
+// Every label maps to itself as well (added below).
+const RAW: Record<string, Label[]> = {
   // Fear & tension
   "on edge": ["tense"], suspense: ["tense"], suspenseful: ["tense"],
   gripping: ["tense", "thrilled"], nervous: ["tense"], anxious: ["tense"],
@@ -73,9 +100,22 @@ const WORDS: Record<string, Feeling[]> = {
   exhausting: ["drained"], draining: ["drained"], heavy: ["drained", "sad"],
 };
 
-for (const f of FEELINGS) {
-  WORDS[f] ??= [f];
-  if (f.includes("-")) WORDS[f.replace("-", " ")] ??= [f];
+const LABELS: Label[] = [
+  ...FEELINGS,
+  ...(Object.keys(MERGED_INTO) as (keyof typeof MERGED_INTO)[]),
+  ...DROPPED,
+];
+for (const l of LABELS) {
+  RAW[l] ??= [l];
+  if (l.includes("-")) RAW[l.replace("-", " ")] ??= [l];
+}
+
+// A word whose only feeling was dropped is left out, so it reads as a story
+// word rather than as a feeling with nothing to search.
+const WORDS: Record<string, Feeling[]> = {};
+for (const [word, labels] of Object.entries(RAW)) {
+  const feelings = resolve(labels);
+  if (feelings.length) WORDS[word] = feelings;
 }
 
 export const FEELING_WORDS = WORDS;

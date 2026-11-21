@@ -1,0 +1,13 @@
+{
+  "decided": "2026-11-16",
+  "why": "These feelings had too few training examples to learn (0-8 each). Each is folded into the closest common feeling in its group, so its examples still count. The label files keep all 28 columns; the merge is applied when the training files are built (scripts/09_build_training_data.py) and when labels are scored (eval/score.py), so it can be changed or undone without relabelling.",
+  "merged_into": {
+    "dread": "tense",
+    "grief-stricken": "sad",
+    "lonely": "sad",
+    "cozy": "heartwarming",
+    "tender": "heartwarming",
+    "hopeful": "uplifted"
+  },
+  "dropped": ["drained"]
+}

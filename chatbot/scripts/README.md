@@ -109,8 +109,9 @@ negative (<=4) reviews. **Sample from `unsup`** for a balanced spread of feeling
 
 ## Which feelings the result can report on
 
-`eval/metric_tiers.py` splits the 28 feelings by what the data supports, reading the
-committed label files (no database needed). Re-run it after any labelling round.
+`eval/metric_tiers.py` splits the feelings the model learns by what the data supports,
+reading the committed label files (no database needed). Re-run it after any labelling
+round.
 
 | tier | meaning |
 | --- | --- |
@@ -119,10 +120,44 @@ committed label files (no database needed). Re-run it after any labelling round.
 | `unmeasurable` | no answer-key examples, so recall is 0/0 and F1 is undefined. |
 | `cannot_learn` | no training examples either. |
 
-Train on all 28 regardless: the heads are independent sigmoids, so an unused one costs
-nothing, and removing a feeling from the label space is hard to undo later. The limit is
-answer-key size, not labelling quality - `scared` has 48 training examples and 2 in the
-answer key.
+### Merged feelings (2026-11-16)
+
+Seven feelings had almost no training examples: lonely 0, grief-stricken 1, dread 4,
+cozy 4, drained 4, tender 7, hopeful 8. A model can't learn from that, so
+`docs/feeling-merges.json` folds six of them into the closest common feeling in their
+group and drops `drained`:
+
+| merged feeling | now counts as |
+| --- | --- |
+| dread | tense |
+| grief-stricken, lonely | sad |
+| cozy, tender | heartwarming |
+| hopeful | uplifted |
+| drained | dropped |
+
+The model learns the other **21**. The label files keep all 28 columns and are never
+edited: step 9 and `eval/score.py` apply the merge when they read them (a review marked
+`dread` counts as `tense`), so changing or undoing it is an edit to that file and a
+rerun. Predictions from before the merge, one score per label column, are merged when
+scored: a merged feeling takes the highest of its columns.
+
+After the merge no feeling is `cannot_learn` or `unmeasurable`: 18 are `reportable` and
+3 `trainable_only` (scared, uplifted, bittersweet). The limit there is answer-key size,
+not labelling quality - `scared` has 48 training examples and 2 in the answer key.
+
+On the 21 merged feelings, with thresholds re-tuned on val, the existing systems score:
+
+| system | team's 111 (11 feelings) | all 206 (18 reportable) | val mAP |
+| --- | --- | --- | --- |
+| tf-idf baseline (refitted on the merged labels) | 0.279 | 0.203 | 0.238 |
+| first model (28-feeling predictions, merged) | 0.382 | 0.271 | 0.378 |
+| retrained Run A (28-feeling predictions, merged) | 0.489 | 0.417 | 0.459 |
+| GPT 5.5 (28-feeling answers, merged) | 0.740 | 0.726 | - |
+
+These are not comparable with the 28-feeling numbers above them in this file: the
+answer key changed shape (one `dread` review now counts as `tense`, which Run A misses).
+A model trained on the merged labels is the next step; to be worth switching to, it
+should beat Run A's 0.459 val mAP.
 
 Always name the metric, never bare "macro-F1": "macro-F1 over the 11 feelings with >=3
 team-labelled examples" for the headline, or "macro-F1 over the 18 reportable feelings"
@@ -130,7 +165,7 @@ for the wider comparison.
 
 ## Week 4 - training data, baseline, scoring
 
-    python scripts/09_build_training_data.py   # text + 28-wide label vector
+    python scripts/09_build_training_data.py   # text + 21-wide label vector (merged)
     python scripts/10_baseline.py              # tf-idf + logistic regression
 
 Label order comes from `docs/feelings-list.md`, the same parser step 7 uses, so
@@ -342,11 +377,13 @@ enough of the gap.
 ### Fine-tuning (Colab)
 
 `notebooks/train_feelings.ipynb` fine-tunes `distilroberta-base` (or
-`roberta-base`) with 28 sigmoid outputs on a free Colab T4. Upload `meta.json`,
+`roberta-base`) with one sigmoid output per feeling (21 since the merge) on a free
+Colab T4. Upload `meta.json`,
 `train.jsonl`, `val.jsonl` and `answer_key.jsonl` from `data/training/`. The
 settings cell holds every knob: `MODEL`, `EPOCHS` (12), `TRUNCATION`
 (`head_tail`, or `head` for the first 512 tokens), `HEAD` (128) and `SEED`.
-The run name is built from them, e.g. `distilroberta_e12_headtail_s49900`, so
+The run name is built from them, e.g. `distilroberta_e12_headtail_f21_s49900`
+(`f21`: trained on the 21 merged feelings; earlier runs have no such part), so
 runs never overwrite each other. A 12-epoch `distilroberta-base` run takes about
 20 minutes.
 

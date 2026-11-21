@@ -18,7 +18,12 @@ Two rules this enforces so nobody has to remember them under deadline:
      are necessary - which makes them a knob, which means they must be fitted
      off the test set. Tune once on val, freeze, then score.
 
-Predictions are JSONL: {"id": "...", "scores": [28 floats in meta.json order]}
+Predictions are JSONL: {"id": "...", "scores": [one float per feeling, in
+meta.json order]}. The model learns 21 feelings: docs/feeling-merges.json folds
+6 rare ones into common ones and drops `drained`. The label files keep all 28,
+so truth is merged here the same way (a `dread` mark counts as `tense`).
+Predictions made before the merge, one score per label column, are merged too:
+a merged feeling takes the highest score among its columns.
 
 Run:  python eval/score.py preds_val.jsonl --tune --out eval/thresholds.json
       python eval/score.py preds_answer_key.jsonl --thresholds eval/thresholds.json
@@ -43,6 +48,15 @@ SPLIT_SOURCE = {"train": "learning", "val": "checking", "answer_key": "exam"}
 TIERS = HERE / "metric_tiers.json"
 MANIFEST = ROOT / "data" / "labeling" / "manifest.json"
 MIN_POSITIVES = 3                                      # the reportable tier's rule
+MERGES = ROOT / "docs" / "feeling-merges.json"
+
+
+def sources_of(feelings):
+    """{feeling: [label columns that count toward it]}: the feeling itself plus
+    any rare feeling merged into it."""
+    merged = (json.loads(MERGES.read_text(encoding="utf-8"))["merged_into"]
+              if MERGES.exists() else {})
+    return {f: [f] + [s for s, t in merged.items() if t == f] for f in feelings}
 
 
 def team_labelled():
@@ -184,8 +198,30 @@ def load_jsonl(path, key):
     return out
 
 
+def load_preds(path, feelings):
+    """{review_id: scores} in `feelings` order.
+
+    Predictions made before the merge have one score per label column (28).
+    Each feeling then takes the highest score among the columns that count
+    toward it, which for a yes/no labeller such as GPT means "any of them".
+    """
+    preds = load_jsonl(path, "scores")
+    widths = {len(v) for v in preds.values()}
+    if widths == {len(feelings)}:
+        return preds
+    meta = json.loads((TRAIN_DIR / "meta.json").read_text(encoding="utf-8"))
+    source = meta.get("source_feelings")
+    if source and widths == {len(source)}:
+        src = sources_of(feelings)
+        cols = [[source.index(s) for s in src[f]] for f in feelings]
+        return {k: [max(v[j] for j in js) for js in cols] for k, v in preds.items()}
+    sys.exit(f"{path}: scores are {sorted(widths)} wide; expected "
+             f"{len(feelings)} (or {len(source or [])} from before the merge).")
+
+
 def load_truth(split, feelings):
-    """{review_id: [28 ints]} from the committed label CSV for `split`.
+    """{review_id: [one int per feeling]} from the committed label CSV for
+    `split`, with merged feelings folded in (a `dread` mark counts as `tense`).
 
     The CSV is wide and column-named; the model's vector is positional. This
     maps names to the canonical order from meta.json rather than trusting
@@ -202,10 +238,12 @@ def load_truth(split, feelings):
         rows = list(csv.DictReader(fh))
     if not rows:
         sys.exit(f"{path} is empty.")
-    missing = [f for f in feelings if f not in rows[0]]
+    src = sources_of(feelings)
+    missing = [s for f in feelings for s in src[f] if s not in rows[0]]
     if missing:
         sys.exit(f"{path} has no column for: {', '.join(missing)}")
-    return {r["id"]: [1 if str(r[f]).strip() == "1" else 0 for f in feelings]
+    return {r["id"]: [1 if any(str(r[s]).strip() == "1" for s in src[f]) else 0
+                      for f in feelings]
             for r in rows}
 
 
@@ -240,7 +278,7 @@ def main():
     wide = set(tiers.get("wide_confidence", []))
 
     truth = load_truth(split, feelings)
-    preds = load_jsonl(Path(args.predictions), "scores")
+    preds = load_preds(Path(args.predictions), feelings)
     overlap = set(truth) & set(preds)
     if not overlap:
         sys.exit("No ids in common between predictions and truth.")
@@ -290,8 +328,8 @@ def main():
              else "in the reportable tier")
     print(f"\nmacro-F1 over the {len(reportable)} feelings {scope}: {fmt(head)}")
     print("  ^ cite it with that qualifier, never as bare macro-F1")
-    all28 = macro_f1(scored, feelings)
-    print(f"\nfor contrast, over all 28 (do not headline this): {fmt(all28)}")
+    every = macro_f1(scored, feelings)
+    print(f"\nfor contrast, over all {len(feelings)} (do not headline this): {fmt(every)}")
     excluded = [f for f in feelings if f not in reportable]
     print(f"  the {len(excluded)} excluded: {', '.join(excluded)}")
     if wide & set(reportable):

@@ -1,0 +1,923 @@
+{
+  "seed": 49900,
+  "purpose": "train",
+  "note": "Extra hand labels for training only. Every film here is outside the checking and exam sets. 'picked_for' is the search that found the review; labellers are not shown it.",
+  "per_feeling": 30,
+  "patterns": {
+    "confused": "mind[- ]?(bending|boggling|blowing|f\\w*)|what (was|is) real|didn'?t know what was (going on|happening|real)|kept me guessing|head[- ]?scratch\\w*|baffl\\w+|bewilder\\w*|disorient\\w*|puzzl\\w+|(?<!to be )confus(ed|ing)|surreal|dreamlike",
+    "thrilled": "edge of (my|your|the) seat|adrenaline|(heart|pulse)[- ]?pounding|breathless|exhilarat\\w+|thrill(ed|ing)|nail[- ]?biting|white[- ]?knuckle|roller ?coaster|gripping|non[- ]?stop action",
+    "nostalgic": "nostalgi\\w+|childhood|when i was (a kid|a child|young|little|\\d+)|growing up|as a (kid|child|teen)|brings? back (memories|the)|takes? me back|memories of|good old days|those days",
+    "joyful": "pure joy|joy(ful|ous)|delight(ed|ful)|big smile|grinn(ing|ed)|so happy|made me happy|feel[- ]?good|beaming|giddy|smil(e|ing) on my face|put a smile",
+    "moved": "moved me|(so|deeply|very|truly) moving|touched me|brought (me to )?tears|tears (in|to) my eyes|i cried|teared up|lump in my throat|choked up|tear[- ]?jerker|tissues|cried (like|my)"
+  },
+  "reviews": [
+    {
+      "id": "train-unsup-1349",
+      "imdb_id": "tt0119086",
+      "picked_for": "joyful"
+    },
+    {
+      "id": "train-unsup-8876",
+      "imdb_id": "tt0036104",
+      "picked_for": "joyful"
+    },
+    {
+      "id": "train-unsup-2370",
+      "imdb_id": "tt0138703",
+      "picked_for": "confused"
+    },
+    {
+      "id": "train-unsup-39303",
+      "imdb_id": "tt0452681",
+      "picked_for": "moved"
+    },
+    {
+      "id": "train-unsup-11239",
+      "imdb_id": "tt0249371",
+      "picked_for": "nostalgic"
+    },
+    {
+      "id": "train-unsup-3109",
+      "imdb_id": "tt0087363",
+      "picked_for": "nostalgic"
+    },
+    {
+      "id": "train-unsup-39006",
+      "imdb_id": "tt0389828",
+      "picked_for": "confused"
+    },
+    {
+      "id": "train-unsup-4846",
+      "imdb_id": "tt0089853",
+      "picked_for": "joyful"
+    },
+    {
+      "id": "train-unsup-12942",
+      "imdb_id": "tt0459605",
+      "picked_for": "thrilled"
+    },
+    {
+      "id": "train-unsup-17324",
+      "imdb_id": "tt0420294",
+      "picked_for": "confused"
+    },
+    {
+      "id": "train-unsup-23871",
+      "imdb_id": "tt0064106",
+      "picked_for": "joyful"
+    },
+    {
+      "id": "train-unsup-17752",
+      "imdb_id": "tt0105435",
+      "picked_for": "joyful"
+    },
+    {
+      "id": "train-unsup-13590",
+      "imdb_id": "tt0182789",
+      "picked_for": "moved"
+    },
+    {
+      "id": "train-unsup-16878",
+      "imdb_id": "tt0041959",
+      "picked_for": "nostalgic"
+    },
+    {
+      "id": "train-unsup-14923",
+      "imdb_id": "tt0118929",
+      "picked_for": "thrilled"
+    },
+    {
+      "id": "train-unsup-27589",
+      "imdb_id": "tt0231402",
+      "picked_for": "joyful"
+    },
+    {
+      "id": "train-unsup-30355",
+      "imdb_id": "tt0760311",
+      "picked_for": "confused"
+    },
+    {
+      "id": "train-unsup-12804",
+      "imdb_id": "tt0082136",
+      "picked_for": "joyful"
+    },
+    {
+      "id": "train-unsup-16474",
+      "imdb_id": "tt0089114",
+      "picked_for": "moved"
+    },
+    {
+      "id": "train-unsup-5898",
+      "imdb_id": "tt0452694",
+      "picked_for": "moved"
+    },
+    {
+      "id": "train-unsup-5243",
+      "imdb_id": "tt0131646",
+      "picked_for": "thrilled"
+    },
+    {
+      "id": "train-unsup-27612",
+      "imdb_id": "tt0081562",
+      "picked_for": "confused"
+    },
+    {
+      "id": "train-unsup-27495",
+      "imdb_id": "tt0079826",
+      "picked_for": "moved"
+    },
+    {
+      "id": "train-unsup-134",
+      "imdb_id": "tt0100263",
+      "picked_for": "thrilled"
+    },
+    {
+      "id": "train-unsup-35728",
+      "imdb_id": "tt0089274",
+      "picked_for": "nostalgic"
+    },
+    {
+      "id": "train-unsup-22750",
+      "imdb_id": "tt0758053",
+      "picked_for": "joyful"
+    },
+    {
+      "id": "train-unsup-24163",
+      "imdb_id": "tt0760329",
+      "picked_for": "moved"
+    },
+    {
+      "id": "train-unsup-20159",
+      "imdb_id": "tt0482629",
+      "picked_for": "moved"
+    },
+    {
+      "id": "train-unsup-41383",
+      "imdb_id": "tt0804452",
+      "picked_for": "nostalgic"
+    },
+    {
+      "id": "train-unsup-23936",
+      "imdb_id": "tt0093818",
+      "picked_for": "nostalgic"
+    },
+    {
+      "id": "train-unsup-38304",
+      "imdb_id": "tt0120860",
+      "picked_for": "joyful"
+    },
+    {
+      "id": "train-unsup-22865",
+      "imdb_id": "tt0070751",
+      "picked_for": "moved"
+    },
+    {
+      "id": "train-unsup-14068",
+      "imdb_id": "tt0022286",
+      "picked_for": "nostalgic"
+    },
+    {
+      "id": "train-unsup-18805",
+      "imdb_id": "tt0029284",
+      "picked_for": "moved"
+    },
+    {
+      "id": "train-unsup-25609",
+      "imdb_id": "tt0377744",
+      "picked_for": "confused"
+    },
+    {
+      "id": "train-unsup-43202",
+      "imdb_id": "tt0086026",
+      "picked_for": "confused"
+    },
+    {
+      "id": "train-unsup-6219",
+      "imdb_id": "tt0337909",
+      "picked_for": "joyful"
+    },
+    {
+      "id": "train-unsup-19170",
+      "imdb_id": "tt0097165",
+      "picked_for": "moved"
+    },
+    {
+      "id": "train-unsup-13203",
+      "imdb_id": "tt0418647",
+      "picked_for": "moved"
+    },
+    {
+      "id": "train-unsup-16603",
+      "imdb_id": "tt0796307",
+      "picked_for": "moved"
+    },
+    {
+      "id": "train-unsup-27954",
+      "imdb_id": "tt0379322",
+      "picked_for": "joyful"
+    },
+    {
+      "id": "train-unsup-23651",
+      "imdb_id": "tt0018528",
+      "picked_for": "thrilled"
+    },
+    {
+      "id": "train-unsup-8203",
+      "imdb_id": "tt0113749",
+      "picked_for": "nostalgic"
+    },
+    {
+      "id": "train-unsup-44427",
+      "imdb_id": "tt0382011",
+      "picked_for": "confused"
+    },
+    {
+      "id": "train-unsup-23977",
+      "imdb_id": "tt0116147",
+      "picked_for": "thrilled"
+    },
+    {
+      "id": "train-unsup-13389",
+      "imdb_id": "tt0250371",
+      "picked_for": "thrilled"
+    },
+    {
+      "id": "train-unsup-17204",
+      "imdb_id": "tt0069704",
+      "picked_for": "moved"
+    },
+    {
+      "id": "train-unsup-21964",
+      "imdb_id": "tt0186151",
+      "picked_for": "thrilled"
+    },
+    {
+      "id": "train-unsup-49045",
+      "imdb_id": "tt0117723",
+      "picked_for": "nostalgic"
+    },
+    {
+      "id": "train-unsup-29949",
+      "imdb_id": "tt0368913",
+      "picked_for": "confused"
+    },
+    {
+      "id": "train-unsup-34403",
+      "imdb_id": "tt0828465",
+      "picked_for": "joyful"
+    },
+    {
+      "id": "train-unsup-23469",
+      "imdb_id": "tt0356159",
+      "picked_for": "thrilled"
+    },
+    {
+      "id": "train-unsup-49501",
+      "imdb_id": "tt0396271",
+      "picked_for": "thrilled"
+    },
+    {
+      "id": "train-unsup-14280",
+      "imdb_id": "tt0042039",
+      "picked_for": "nostalgic"
+    },
+    {
+      "id": "train-unsup-14641",
+      "imdb_id": "tt0439662",
+      "picked_for": "thrilled"
+    },
+    {
+      "id": "train-unsup-32085",
+      "imdb_id": "tt0043014",
+      "picked_for": "nostalgic"
+    },
+    {
+      "id": "train-unsup-28542",
+      "imdb_id": "tt0285930",
+      "picked_for": "moved"
+    },
+    {
+      "id": "train-unsup-16502",
+      "imdb_id": "tt0367153",
+      "picked_for": "confused"
+    },
+    {
+      "id": "train-unsup-3047",
+      "imdb_id": "tt0104573",
+      "picked_for": "nostalgic"
+    },
+    {
+      "id": "train-unsup-28904",
+      "imdb_id": "tt0034012",
+      "picked_for": "moved"
+    },
+    {
+      "id": "train-unsup-4045",
+      "imdb_id": "tt0095016",
+      "picked_for": "thrilled"
+    },
+    {
+      "id": "train-unsup-29185",
+      "imdb_id": "tt0071487",
+      "picked_for": "confused"
+    },
+    {
+      "id": "train-unsup-223",
+      "imdb_id": "tt0235712",
+      "picked_for": "moved"
+    },
+    {
+      "id": "train-unsup-8934",
+      "imdb_id": "tt0473514",
+      "picked_for": "moved"
+    },
+    {
+      "id": "train-unsup-19082",
+      "imdb_id": "tt0402158",
+      "picked_for": "thrilled"
+    },
+    {
+      "id": "train-unsup-22184",
+      "imdb_id": "tt0104684",
+      "picked_for": "thrilled"
+    },
+    {
+      "id": "train-unsup-11277",
+      "imdb_id": "tt0490166",
+      "picked_for": "thrilled"
+    },
+    {
+      "id": "train-unsup-1832",
+      "imdb_id": "tt0052600",
+      "picked_for": "nostalgic"
+    },
+    {
+      "id": "train-unsup-16085",
+      "imdb_id": "tt0188640",
+      "picked_for": "nostalgic"
+    },
+    {
+      "id": "train-unsup-16205",
+      "imdb_id": "tt0375735",
+      "picked_for": "thrilled"
+    },
+    {
+      "id": "train-unsup-32458",
+      "imdb_id": "tt0236126",
+      "picked_for": "nostalgic"
+    },
+    {
+      "id": "train-unsup-15123",
+      "imdb_id": "tt0081070",
+      "picked_for": "thrilled"
+    },
+    {
+      "id": "train-unsup-10330",
+      "imdb_id": "tt0240913",
+      "picked_for": "confused"
+    },
+    {
+      "id": "train-unsup-1582",
+      "imdb_id": "tt0030287",
+      "picked_for": "thrilled"
+    },
+    {
+      "id": "train-unsup-37200",
+      "imdb_id": "tt0484562",
+      "picked_for": "confused"
+    },
+    {
+      "id": "train-unsup-31610",
+      "imdb_id": "tt0068828",
+      "picked_for": "thrilled"
+    },
+    {
+      "id": "train-unsup-19335",
+      "imdb_id": "tt0478188",
+      "picked_for": "thrilled"
+    },
+    {
+      "id": "train-unsup-18640",
+      "imdb_id": "tt0346336",
+      "picked_for": "moved"
+    },
+    {
+      "id": "train-unsup-34896",
+      "imdb_id": "tt0300556",
+      "picked_for": "confused"
+    },
+    {
+      "id": "train-unsup-27136",
+      "imdb_id": "tt0100975",
+      "picked_for": "joyful"
+    },
+    {
+      "id": "train-unsup-24776",
+      "imdb_id": "tt0841044",
+      "picked_for": "confused"
+    },
+    {
+      "id": "train-unsup-8433",
+      "imdb_id": "tt0075909",
+      "picked_for": "nostalgic"
+    },
+    {
+      "id": "train-unsup-10650",
+      "imdb_id": "tt0084445",
+      "picked_for": "confused"
+    },
+    {
+      "id": "train-unsup-17437",
+      "imdb_id": "tt0286751",
+      "picked_for": "moved"
+    },
+    {
+      "id": "train-unsup-16384",
+      "imdb_id": "tt0017925",
+      "picked_for": "confused"
+    },
+    {
+      "id": "train-unsup-6578",
+      "imdb_id": "tt0048750",
+      "picked_for": "joyful"
+    },
+    {
+      "id": "train-unsup-15622",
+      "imdb_id": "tt0364093",
+      "picked_for": "moved"
+    },
+    {
+      "id": "train-unsup-11946",
+      "imdb_id": "tt0844894",
+      "picked_for": "confused"
+    },
+    {
+      "id": "train-unsup-13911",
+      "imdb_id": "tt0447854",
+      "picked_for": "nostalgic"
+    },
+    {
+      "id": "train-unsup-6887",
+      "imdb_id": "tt0492506",
+      "picked_for": "confused"
+    },
+    {
+      "id": "train-unsup-28983",
+      "imdb_id": "tt0095327",
+      "picked_for": "moved"
+    },
+    {
+      "id": "train-unsup-36636",
+      "imdb_id": "tt0084814",
+      "picked_for": "nostalgic"
+    },
+    {
+      "id": "train-unsup-20966",
+      "imdb_id": "tt0243609",
+      "picked_for": "moved"
+    },
+    {
+      "id": "train-unsup-26471",
+      "imdb_id": "tt0119994",
+      "picked_for": "thrilled"
+    },
+    {
+      "id": "train-unsup-14759",
+      "imdb_id": "tt0110516",
+      "picked_for": "nostalgic"
+    },
+    {
+      "id": "train-unsup-9593",
+      "imdb_id": "tt0211915",
+      "picked_for": "joyful"
+    },
+    {
+      "id": "train-unsup-19245",
+      "imdb_id": "tt0269217",
+      "picked_for": "joyful"
+    },
+    {
+      "id": "train-unsup-2937",
+      "imdb_id": "tt0422419",
+      "picked_for": "joyful"
+    },
+    {
+      "id": "train-unsup-4204",
+      "imdb_id": "tt0031235",
+      "picked_for": "joyful"
+    },
+    {
+      "id": "train-unsup-3022",
+      "imdb_id": "tt0362270",
+      "picked_for": "nostalgic"
+    },
+    {
+      "id": "train-unsup-4770",
+      "imdb_id": "tt0380066",
+      "picked_for": "confused"
+    },
+    {
+      "id": "train-unsup-24806",
+      "imdb_id": "tt0370986",
+      "picked_for": "nostalgic"
+    },
+    {
+      "id": "train-unsup-4430",
+      "imdb_id": "tt0079714",
+      "picked_for": "confused"
+    },
+    {
+      "id": "train-unsup-41846",
+      "imdb_id": "tt0372884",
+      "picked_for": "confused"
+    },
+    {
+      "id": "train-unsup-15534",
+      "imdb_id": "tt0498318",
+      "picked_for": "nostalgic"
+    },
+    {
+      "id": "train-unsup-4465",
+      "imdb_id": "tt0205461",
+      "picked_for": "joyful"
+    },
+    {
+      "id": "train-unsup-6324",
+      "imdb_id": "tt0101545",
+      "picked_for": "nostalgic"
+    },
+    {
+      "id": "train-unsup-47177",
+      "imdb_id": "tt0168172",
+      "picked_for": "thrilled"
+    },
+    {
+      "id": "train-unsup-8628",
+      "imdb_id": "tt0465940",
+      "picked_for": "thrilled"
+    },
+    {
+      "id": "train-unsup-6127",
+      "imdb_id": "tt0104779",
+      "picked_for": "moved"
+    },
+    {
+      "id": "train-unsup-14429",
+      "imdb_id": "tt0074749",
+      "picked_for": "confused"
+    },
+    {
+      "id": "train-unsup-17890",
+      "imdb_id": "tt0309698",
+      "picked_for": "thrilled"
+    },
+    {
+      "id": "train-unsup-2247",
+      "imdb_id": "tt0254455",
+      "picked_for": "joyful"
+    },
+    {
+      "id": "train-unsup-9224",
+      "imdb_id": "tt0284850",
+      "picked_for": "joyful"
+    },
+    {
+      "id": "train-unsup-16643",
+      "imdb_id": "tt0100212",
+      "picked_for": "confused"
+    },
+    {
+      "id": "train-unsup-3307",
+      "imdb_id": "tt0428303",
+      "picked_for": "confused"
+    },
+    {
+      "id": "train-unsup-18370",
+      "imdb_id": "tt0426931",
+      "picked_for": "joyful"
+    },
+    {
+      "id": "train-unsup-32171",
+      "imdb_id": "tt0079802",
+      "picked_for": "nostalgic"
+    },
+    {
+      "id": "train-unsup-42115",
+      "imdb_id": "tt0290230",
+      "picked_for": "confused"
+    },
+    {
+      "id": "train-unsup-11133",
+      "imdb_id": "tt0200809",
+      "picked_for": "moved"
+    },
+    {
+      "id": "train-unsup-8983",
+      "imdb_id": "tt0250081",
+      "picked_for": "confused"
+    },
+    {
+      "id": "train-unsup-18787",
+      "imdb_id": "tt0074483",
+      "picked_for": "joyful"
+    },
+    {
+      "id": "train-unsup-14521",
+      "imdb_id": "tt0079935",
+      "picked_for": "moved"
+    },
+    {
+      "id": "train-unsup-7194",
+      "imdb_id": "tt0158681",
+      "picked_for": "nostalgic"
+    },
+    {
+      "id": "train-unsup-18107",
+      "imdb_id": "tt0478829",
+      "picked_for": "moved"
+    },
+    {
+      "id": "train-unsup-5961",
+      "imdb_id": "tt0120804",
+      "picked_for": "thrilled"
+    },
+    {
+      "id": "train-unsup-28818",
+      "imdb_id": "tt0039169",
+      "picked_for": "nostalgic"
+    },
+    {
+      "id": "train-unsup-23082",
+      "imdb_id": "tt0486585",
+      "picked_for": "nostalgic"
+    },
+    {
+      "id": "train-unsup-30716",
+      "imdb_id": "tt0090866",
+      "picked_for": "confused"
+    },
+    {
+      "id": "train-unsup-5325",
+      "imdb_id": "tt0286261",
+      "picked_for": "thrilled"
+    },
+    {
+      "id": "train-unsup-17582",
+      "imdb_id": "tt0074174",
+      "picked_for": "joyful"
+    },
+    {
+      "id": "train-unsup-11202",
+      "imdb_id": "tt0191636",
+      "picked_for": "moved"
+    },
+    {
+      "id": "train-unsup-14809",
+      "imdb_id": "tt0347304",
+      "picked_for": "moved"
+    },
+    {
+      "id": "train-unsup-23374",
+      "imdb_id": "tt0475783",
+      "picked_for": "joyful"
+    },
+    {
+      "id": "train-unsup-12604",
+      "imdb_id": "tt0040076",
+      "picked_for": "joyful"
+    },
+    {
+      "id": "train-unsup-26764",
+      "imdb_id": "tt0115678",
+      "picked_for": "joyful"
+    },
+    {
+      "id": "train-unsup-24395",
+      "imdb_id": "tt0036367",
+      "picked_for": "nostalgic"
+    },
+    {
+      "id": "train-unsup-8285",
+      "imdb_id": "tt0062089",
+      "picked_for": "thrilled"
+    },
+    {
+      "id": "train-unsup-10538",
+      "imdb_id": "tt0120070",
+      "picked_for": "moved"
+    },
+    {
+      "id": "train-unsup-13719",
+      "imdb_id": "tt0119361",
+      "picked_for": "thrilled"
+    },
+    {
+      "id": "train-unsup-7727",
+      "imdb_id": "tt0092240",
+      "picked_for": "nostalgic"
+    },
+    {
+      "id": "train-unsup-10744",
+      "imdb_id": "tt0081480",
+      "picked_for": "joyful"
+    },
+    {
+      "id": "train-unsup-4289",
+      "imdb_id": "tt0292490",
+      "picked_for": "joyful"
+    },
+    {
+      "id": "train-unsup-30533",
+      "imdb_id": "tt0042994",
+      "picked_for": "joyful"
+    },
+    {
+      "id": "train-unsup-4268",
+      "imdb_id": "tt0325596",
+      "picked_for": "thrilled"
+    },
+    {
+      "id": "train-unsup-13691",
+      "imdb_id": "tt0084707",
+      "picked_for": "moved"
+    },
+    {
+      "id": "train-unsup-14326",
+      "imdb_id": "tt0130623",
+      "picked_for": "thrilled"
+    },
+    {
+      "id": "train-unsup-37439",
+      "imdb_id": "tt0433963",
+      "picked_for": "confused"
+    },
+    {
+      "id": "train-unsup-10575",
+      "imdb_id": "tt0381601",
+      "picked_for": "confused"
+    },
+    {
+      "id": "train-unsup-18275",
+      "imdb_id": "tt0078111",
+      "picked_for": "nostalgic"
+    }
+  ],
+  "assignments": {
+    "roger": [
+      "train-unsup-1349",
+      "train-unsup-39303",
+      "train-unsup-39006",
+      "train-unsup-17324",
+      "train-unsup-13590",
+      "train-unsup-27589",
+      "train-unsup-16474",
+      "train-unsup-27612",
+      "train-unsup-35728",
+      "train-unsup-20159",
+      "train-unsup-38304",
+      "train-unsup-18805",
+      "train-unsup-6219",
+      "train-unsup-16603",
+      "train-unsup-8203",
+      "train-unsup-13389",
+      "train-unsup-49045",
+      "train-unsup-23469",
+      "train-unsup-14641",
+      "train-unsup-16502",
+      "train-unsup-4045",
+      "train-unsup-8934",
+      "train-unsup-11277",
+      "train-unsup-16205",
+      "train-unsup-10330",
+      "train-unsup-31610",
+      "train-unsup-34896",
+      "train-unsup-8433",
+      "train-unsup-16384",
+      "train-unsup-11946",
+      "train-unsup-28983",
+      "train-unsup-26471",
+      "train-unsup-19245",
+      "train-unsup-3022",
+      "train-unsup-4430",
+      "train-unsup-4465",
+      "train-unsup-8628",
+      "train-unsup-17890",
+      "train-unsup-16643",
+      "train-unsup-32171",
+      "train-unsup-8983",
+      "train-unsup-7194",
+      "train-unsup-28818",
+      "train-unsup-5325",
+      "train-unsup-14809",
+      "train-unsup-26764",
+      "train-unsup-10538",
+      "train-unsup-10744",
+      "train-unsup-4268",
+      "train-unsup-37439"
+    ],
+    "mate": [
+      "train-unsup-8876",
+      "train-unsup-11239",
+      "train-unsup-4846",
+      "train-unsup-23871",
+      "train-unsup-16878",
+      "train-unsup-30355",
+      "train-unsup-5898",
+      "train-unsup-27495",
+      "train-unsup-22750",
+      "train-unsup-41383",
+      "train-unsup-22865",
+      "train-unsup-25609",
+      "train-unsup-19170",
+      "train-unsup-27954",
+      "train-unsup-44427",
+      "train-unsup-17204",
+      "train-unsup-29949",
+      "train-unsup-49501",
+      "train-unsup-32085",
+      "train-unsup-3047",
+      "train-unsup-29185",
+      "train-unsup-19082",
+      "train-unsup-1832",
+      "train-unsup-32458",
+      "train-unsup-1582",
+      "train-unsup-19335",
+      "train-unsup-27136",
+      "train-unsup-10650",
+      "train-unsup-6578",
+      "train-unsup-13911",
+      "train-unsup-36636",
+      "train-unsup-14759",
+      "train-unsup-2937",
+      "train-unsup-4770",
+      "train-unsup-41846",
+      "train-unsup-6324",
+      "train-unsup-6127",
+      "train-unsup-2247",
+      "train-unsup-3307",
+      "train-unsup-42115",
+      "train-unsup-18787",
+      "train-unsup-18107",
+      "train-unsup-23082",
+      "train-unsup-17582",
+      "train-unsup-23374",
+      "train-unsup-24395",
+      "train-unsup-13719",
+      "train-unsup-4289",
+      "train-unsup-13691",
+      "train-unsup-10575"
+    ],
+    "apurba": [
+      "train-unsup-2370",
+      "train-unsup-3109",
+      "train-unsup-12942",
+      "train-unsup-17752",
+      "train-unsup-14923",
+      "train-unsup-12804",
+      "train-unsup-5243",
+      "train-unsup-134",
+      "train-unsup-24163",
+      "train-unsup-23936",
+      "train-unsup-14068",
+      "train-unsup-43202",
+      "train-unsup-13203",
+      "train-unsup-23651",
+      "train-unsup-23977",
+      "train-unsup-21964",
+      "train-unsup-34403",
+      "train-unsup-14280",
+      "train-unsup-28542",
+      "train-unsup-28904",
+      "train-unsup-223",
+      "train-unsup-22184",
+      "train-unsup-16085",
+      "train-unsup-15123",
+      "train-unsup-37200",
+      "train-unsup-18640",
+      "train-unsup-24776",
+      "train-unsup-17437",
+      "train-unsup-15622",
+      "train-unsup-6887",
+      "train-unsup-20966",
+      "train-unsup-9593",
+      "train-unsup-4204",
+      "train-unsup-24806",
+      "train-unsup-15534",
+      "train-unsup-47177",
+      "train-unsup-14429",
+      "train-unsup-9224",
+      "train-unsup-18370",
+      "train-unsup-11133",
+      "train-unsup-14521",
+      "train-unsup-5961",
+      "train-unsup-30716",
+      "train-unsup-11202",
+      "train-unsup-12604",
+      "train-unsup-8285",
+      "train-unsup-7727",
+      "train-unsup-30533",
+      "train-unsup-14326",
+      "train-unsup-18275"
+    ]
+  }
+}

@@ -12,10 +12,11 @@ The second is a sample-size limit, not a labelling failure. The answer key is
 by arithmetic. `scared` has 48 training examples and 2 in the answer key - the
 model can learn it, we just cannot measure it.
 
-So: train on all 28 (sigmoid heads are independent, an unused one costs
-nothing, and dropping a feeling from the label space is hard to undo once the
-app is live), and report macro-F1 over REPORTABLE only - always named as such,
-never as bare "macro-F1".
+The first failure is fixed by merging: docs/feeling-merges.json folds the
+feelings with almost no training examples into a common one (2026-11-16), so
+the model learns 21. The label files keep all 28 columns, so the merge stays
+reversible; the counts below are for the merged feelings. Then report macro-F1
+over REPORTABLE only - always named as such, never as bare "macro-F1".
 
 Counts come from the committed text-free label files, filtered to reviews that
 actually exist in the corpus, so this runs with no database and no API key.
@@ -34,6 +35,7 @@ LABELS = ROOT / "data" / "labels"
 REVIEWS = ROOT / "data" / "reviews.jsonl"
 CORPUS_IDS = LABELS / "corpus_ids.txt"
 OUT = Path(__file__).resolve().parent / "metric_tiers.json"
+MERGES = ROOT / "docs" / "feeling-merges.json"
 
 # file         the split it is
 SPLITS = [("learning", "train"), ("checking", "val"), ("exam", "answer")]
@@ -80,20 +82,26 @@ def corpus_ids():
 
 
 def count():
-    """feeling -> {train, val, answer}, over reviews the corpus really has."""
+    """feeling -> {train, val, answer}, over reviews the corpus really has,
+    for the feelings the model learns (merged feelings folded in)."""
     known = corpus_ids()
+    merges = json.loads(MERGES.read_text(encoding="utf-8"))
+    merged, gone = merges["merged_into"], set(merges["dropped"])
 
-    counts, feelings, dropped = {}, None, 0
+    counts, feelings, cols0, dropped = {}, None, None, 0
     for name, split in SPLITS:
         p = LABELS / f"{name}_labels.csv"
         if not p.exists():
             sys.exit(f"{p} not found - run scripts/08_export_labels.py first.")
         rows = list(csv.DictReader(open(p, encoding="utf-8")))
         cols = [c for c in rows[0] if c not in META]
-        if feelings is None:
-            feelings = cols
-            counts = {f: {"train": 0, "val": 0, "answer": 0} for f in cols}
-        elif cols != feelings:
+        if cols0 is None:
+            cols0 = cols
+            feelings = [c for c in cols if c not in merged and c not in gone]
+            sources = {f: [f] + [s for s, t in merged.items() if t == f]
+                       for f in feelings}
+            counts = {f: {"train": 0, "val": 0, "answer": 0} for f in feelings}
+        elif cols != cols0:
             sys.exit(f"{name}_labels.csv has different feeling columns.")
         for r in rows:
             # A review with no text in the corpus can never be scored, so its
@@ -103,8 +111,8 @@ def count():
             if r["id"] not in known:
                 dropped += 1
                 continue
-            for f in cols:
-                if str(r[f]).strip() == "1":
+            for f in feelings:
+                if any(str(r[s]).strip() == "1" for s in sources[f]):
                     counts[f][split] += 1
     return counts, feelings, dropped
 

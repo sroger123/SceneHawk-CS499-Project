@@ -1,8 +1,8 @@
 #!/usr/bin/env python3
 """Step 12 - fill the feelings table (film_feelings) with the trained model.
 
-Runs the saved feelings model over every review, averages the 28 scores per
-film, and writes one row per (film, feeling):
+Runs the saved feelings model over every review, averages its scores (one per
+feeling the model learns) per film, and writes one row per (film, feeling):
 
     score               mean predicted probability over the film's reviews
     review_count        how many reviews went into the mean
