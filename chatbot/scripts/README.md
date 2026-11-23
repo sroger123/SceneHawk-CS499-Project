@@ -461,9 +461,11 @@ folder's `scenehawk_settings.json`; a folder without one (the first model) gets
 the first 512 tokens. The start-up line says which, e.g. `reviews cut by
 head_tail at 512 tokens`.
 
-It works with any saved version of the model. The table holds the retrained
-model's scores, `distilroberta_e12_headtail_s49900-20261108-2130`, filled
-2026-11-15 for all 2,871 films with reviews (28 rows each).
+It works with any saved version of the model. The table holds the 3-seed
+roberta-base average, `roberta_e12_headtail_f21_seedavg3-20261121`, filled
+2026-11-22 for all 2,871 films with reviews (21 rows each, 36,680 reviews).
+Before that it held `distilroberta_e12_headtail_s49900-20261108-2130` (Run A,
+28 rows each, filled 2026-11-15).
 
 With several `--model` folders, each model scores every review into its own
 cache (`review_scores_<folder>.jsonl`), and each review's scores are averaged
@@ -475,7 +477,10 @@ rather than write films with reviews missing.
 As of 2026-11-21 the fill notebook is set to the average of the three
 roberta-base f21 seeds (49900, 49901, 49902), stored as
 `roberta_e12_headtail_f21_seedavg3-20261121` (21 rows per film). It starts
-with `DRY_RUN = True`; the table changes only when that is set to False.
+with `DRY_RUN = True`; the table changes only when that is set to False. With
+`USE_DRIVE = False` (the default) it asks you to upload one zip per model
+folder instead of mounting Google Drive; the cache then lasts only for that
+Colab session.
 
 ## Citation
 
